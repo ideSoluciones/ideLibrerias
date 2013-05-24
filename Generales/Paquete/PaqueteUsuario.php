@@ -14,8 +14,32 @@
 				$nombreCasoUso=$sesion->leerParametro("nombreCasoUso");
 			}
 			if (is_null($contenido)){
-				$contenido=new SimpleXMLElement("<Contenido/>");
+				$contenido=xml::add(null, "Contenido");
 			}
+			
+			if ($sesion->leerParametroDestinoActual("Usuario")!="" && $sesion->leerParametroDestinoActual("Pass")!=""){
+				$controlUsuario=new Control0Usuario($sesion->getDB());
+				$voUsuario=$controlUsuario->autenticarUsuario($sesion->leerParametroDestinoActual("Usuario"), md5($sesion->leerParametroDestinoActual("Pass")));
+				// Se settea una variable con el incremento de la renovación de expiración de sesión
+				$timeout=$sesion->leerParametroFormularioActual("timeout");
+				msg::add($timeout);
+				if ($timeout==""){
+					$timeout = 30;
+				}
+				
+
+				if (!is_null($voUsuario)){
+					$destino=$sesion->leerParametroFormularioActual("destinoCasoUsoLogin");
+					//echo generalXML::geshiXML($sesion->xml);
+					Control0Usuario::ingresoUsuario($contenido,$voUsuario,resolverPath()."/".$destino,$timeout);
+					return $contenido;
+				}else{
+					xml::add($wiki, 'Wiki', "==Error Accediendo==\nUsuario o contraseña invalido, intente de nuevo:");
+				}
+			}
+
+			
+			
 			$wiki = $contenido->addChild('Wiki');
 			$wiki[] = '==Ingresando al sistema==';
 			$Formulario = $contenido->addChild('Formulario');
@@ -63,21 +87,7 @@
 		}
 		
 		function procesarFormulario_login($sesion){
-			$controlUsuario=new Control0Usuario($sesion->getDB());
-			$voUsuario=$controlUsuario->autenticarUsuario($sesion->leerParametroDestinoActual("Usuario"), md5($sesion->leerParametroDestinoActual("Pass")));
-			// Se settea una variable con el incremento de la renovación de expiración de sesión
-			$timeout=$sesion->leerParametroFormularioActual("timeout");
-			$contenido=new SimpleXMLElement('<Contenido/>');
-			if (!is_null($voUsuario)){
-				$destino=$sesion->leerParametroFormularioActual("destinoCasoUsoLogin");
-				//echo generalXML::geshiXML($sesion->xml);
-				Control0Usuario::ingresoUsuario($contenido,$voUsuario,resolverPath()."/".$destino,$timeout);
-			}else{
-				$wiki = $contenido->addChild('Wiki');
-				$wiki[]="==Error Accediendo==\nUsuario o contraseña invalido, intente de nuevo:";
-				return $this->generarContenido_login($sesion, $contenido);
-			}
-			return $contenido;
+			return $this->generarContenido_login($sesion);
 		}
 
 
@@ -87,7 +97,7 @@
 		*/
 
 		function nombreMenu_logout($sesion){
-			return "Salida";
+			return "";
 		}
 		function generarContenido_logout($sesion){
 
