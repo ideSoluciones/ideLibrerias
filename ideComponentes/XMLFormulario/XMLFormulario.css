@@ -1,0 +1,35 @@
+.elementoLista{
+	color: gold;
+}
+
+.botonAccion{
+	border:1px solid peru;
+}
+
+input.error{
+	border:2px dotted red;
+	background-image: none;
+}
+
+label.error{
+	padding-left: 40px;
+	color: red;
+}
+
+#recaptcha_widget_div{
+	margin: 10px 0;
+}
+
+.ui-dropdownchecklist
+{
+	width: 200px;
+}
+.ui-dropdownchecklist-text{
+	width: 181px !important;
+}
+
+.contenedorMapa{
+	float:left;
+	height: 300px;
+	width: 300px;
+}

@@ -1,0 +1,2 @@
+pathCliente="$pathCliente";
+direccionCompleta="$direccionCompleta";

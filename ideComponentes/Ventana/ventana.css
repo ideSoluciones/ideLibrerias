@@ -1,0 +1,38 @@
+.bloque_ventana{
+	/*width:700px;
+	height:500px;*/
+}
+
+.bloque_titulo{
+	height:15px;
+	background-image:url(imagenes/titulo.png);
+	font-weight:bold;
+	font-family:sans-serif;
+	font-size:15px;
+	padding:5px 10px 5px 10px;
+	color:white;
+}
+
+.bloque_borde{
+	background-image:url(imagenes/borde.png);
+	overflow:hidden;
+	padding:0px 5px 0px 5px;
+}
+
+.bloque_contenido{
+	padding:1px;
+	height:100%;
+	background-color:#e7e7e7;
+	background-image:url(imagenes/fondo5.png);
+	opacity:1;
+}
+
+.bloque_bordeInferior{
+	background-image:url(imagenes/bordeInferior.png);
+	overflow:hidden;
+	padding:0px 5px 0px 5px;
+}
+
+.altoBordeInferior{
+	height:5px;
+}

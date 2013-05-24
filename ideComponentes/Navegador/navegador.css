@@ -1,0 +1,147 @@
+.elementoLista{
+	color: gold;
+}
+
+.botonAccionNavegador{
+	background: url(imagenes/botonNaranja.png) no-repeat;
+	text-align:center;
+	line-height:27px;
+	float:left;
+	padding-left:7px;
+}
+
+.botonAccionNavegador a{
+	color:white;
+	font-weight:bold;
+	text-decoration:none;
+	font-size:13px;
+}
+
+.botonAccionNavegadorCierre{
+	float:left;
+	background: url(imagenes/cierreBotonNaranja.png) no-repeat;
+	width:7px;
+	height:27px;
+}
+
+.listaNavegador{
+	border:1px solid #bfbfbf;
+	overflow:hidden;
+	margin-top:
+}
+
+.elementoListaNavegador{
+	/*border:1px solid gold;*/
+	margin:5px;
+	height:16px;
+	background:url(imagenes/itemLista.png) no-repeat;
+	padding-left:20px;
+	border-bottom:1px solid #bfbfbf;
+	overflow:hidden;
+}
+
+.elementoListaNavegador a{
+	color:black;
+	font-size:13px;
+	text-decoration:none;
+}
+
+.accionesListaNavegador{
+	overflow:hidden;
+	padding:5px;
+	border-top:1px solid #bfbfbf;
+	height:26px;
+	_height:34px;
+}
+
+.tituloLista{
+	background:url(imagenes/cuerpoPestana.png) repeat-x;
+	color:#474747;
+	float:left;
+	font-size:13px;
+	font-weight:bold;
+	height:30px;
+	line-height:35px;
+}
+
+.preTituloLista{
+	background:url(imagenes/prePestana.png) no-repeat;
+	height:30px;
+	width:12px;
+	float:left;
+}
+
+.posTituloLista{
+	background:url(imagenes/posPestana.png) no-repeat;
+	height:30px;
+	width:19px;
+	float:left;
+}
+
+.contenedorTitulo{
+	overflow:hidden;
+	height:30px;
+}
+.contenedorListaNavegador{
+	overflow:hidden;
+	/*float:left;*/
+	margin:1px;
+	width:230px;
+}
+
+.contenedorItems{
+	overflow:auto;
+	height:200px;
+}
+
+.elementoSeleccionado{
+	background-color:#ffd478;
+}
+
+/* PAGINACION */
+
+.contenedorPaginacion{
+	padding:3px;
+	overflow:hidden;
+	height:14px;
+	_height:20px;
+}
+.accionSiguiente a{
+	color:#8A2655;
+	font-weight:bold;
+	font-family:sans-serif;
+	font-size:11px;
+	text-decoration:none;
+}
+	
+.accionAnterior{
+	float:left;
+}
+.accionAnterior a{
+	color:#8A2655;
+	font-weight:bold;
+	font-family:sans-serif;
+	font-size:11px;
+	text-decoration:none;
+}
+.mensajePaginacion{
+	font-family:sans-serif;
+	font-size:11px;
+	padding-left:5px;
+	padding-right:5px;
+	float:left;
+}
+
+/* formulario */
+
+.formulario{
+	overflow:hidden;
+	clear:both;
+}
+
+.grupoDeListas{
+	border:1px solid red;
+	overflow:hidden;
+	/*width:235px;*/
+	float:left;
+}

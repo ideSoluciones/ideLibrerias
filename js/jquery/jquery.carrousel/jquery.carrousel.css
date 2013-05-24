@@ -1,0 +1,35 @@
+/** Custom jQuery carrousel **/
+
+.carrousel {
+	display:block;
+	border:1px dotted red;
+	list-style-type: none;
+	margin-left:0px;
+}
+
+.carrousel>div>ul{
+	list-style-type: none;
+	margin-left: 0px;
+}
+
+.carrousel_itemList {
+	margin:0;
+	padding:0;
+	position:relative;
+	float:right;
+}
+
+.carrousel_itemList_li {
+	float:left;
+	position:relative;
+	list-style:none;
+	width: 17px;
+	height: 17px;
+	border: 1px solid #F0EB9E;
+	text-align: center;
+	margin: 1px;
+}
+
+.carrousel_button{
+	
+}

@@ -1,0 +1,260 @@
+<Nodos>
+	<!-- 
+	Descripción General
+	-->
+
+	<!-- Posibles Artefactos -->
+	<Nodo nombre="Artefacto" formatoHijos="1">
+		<Hijo nombre="PropuestaInicial" cantidad="1" />
+		<Hijo nombre="PlaneacionProyecto" cantidad="1" />
+		<Hijo nombre="DescripcionProyecto" cantidad="1" />
+		<Hijo nombre="Glosario" cantidad="1" />
+		<Hijo nombre="DescripcionModeloNegocio" cantidad="1" />
+		<Hijo nombre="Requerimientos" cantidad="1" />
+		<Hijo nombre="Entrevista" cantidad="1" />
+		<Hijo nombre="CasosUso" cantidad="1" />
+		<Hijo nombre="DescripcionCasosUso" cantidad="1" />
+		<Hijo nombre="DiagramaDeClases" cantidad="1" />
+	</Nodo>
+
+	<!-- Propuesta Inicial -->
+	<Nodo nombre="PropuestaInicial" formatoHijos="*">
+		<Propiedad nombre="tipo" valor="Texto" />
+		<Hijo nombre="Seccion" cantidad="*" />
+	</Nodo>
+
+	<Nodo nombre="Seccion" formatoHijos="*">
+		<Propiedad nombre="nivel" valor="" />
+		<Propiedad nombre="titulo" valor="" />
+		<Propiedad nombre="texto" valor="" />
+		<Hijo nombre="Seccion" formatoHijos="*" />
+	</Nodo>
+
+	<!-- Planeación del proyecto -->
+	<Nodo nombre="PlaneacionProyecto" formatoHijos="*">
+		<Propiedad nombre="tipo" valor="Texto" />
+		<Hijo nombre="Seccion" cantidad="*" />
+	</Nodo>
+
+	<!-- Descripción del proyecto -->
+	<Nodo nombre="DescripcionProyecto" formatoHijos="*">
+		<Propiedad nombre="tipo" valor="Texto" />
+		<Hijo nombre="Seccion" cantidad="*" />
+	</Nodo>
+
+	<!-- Glosario -->
+	<Nodo nombre="Glosario" formatoHijos="*">
+		<Propiedad nombre="tipo" valor="Diccionario" />
+		<Hijo nombre="TerminoGlosario" cantidad="*" />
+	</Nodo>
+
+	<Nodo nombre="TerminoGlosario" formatoHijos="0">
+		<Propiedad nombre="nombre" valor="" />
+		<Contenido/>
+	</Nodo>
+
+	<!-- Descripción del modelo de negocio -->
+	<Nodo nombre="DescripcionModeloNegocio" formatoHijos="*">
+		<Propiedad nombre="tipo" valor="DiagramaFlujo" />
+		<Hijo nombre="ElementoDiagramaFlujo" cantidad="*"/>
+	</Nodo>
+
+	<Nodo nombre="ElementoDiagramaFlujo" formatoHijos="*">
+		<Propiedad nombre="id" valor=""/>
+		<Propiedad nombre="nombre" valor=""/>
+		<Propiedad nombre="tipo" valor="Inicio|Proceso|Entrada|Salida|Decisión|Conector|Final"/>
+		<Hijo nombre="DestinoElementoDiagramaFlujo" cantidad="1!=tipo(Decisión)|*==tipo(Decisión)"/>
+	</Nodo>
+
+	<Nodo nombre="DestinoElementoDiagramaFlujo" formatoHijos="0">
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="idDestino" valor=""/>
+	</Nodo>
+
+	<!-- Levantamiento de requerimientos -->
+	<Nodo nombre="Requerimientos" formatoHijos="*">
+		<Propiedad nombre="tipo" valor="Arbol" />
+		<Hijo nombre="ModulosRequerimientos" cantidad="*" />
+	</Nodo>
+
+	<Nodo nombre="ModulosRequerimientos" formatoHijos="*">
+		<Propiedad nombre="nombre" valor="" />
+		<Hijo nombre="Requerimiento" cantidad="*" />
+	</Nodo>
+
+	<Nodo nombre="Requerimiento" formatoHijos="*">
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="descripcion" valor="" />
+		<Hijo nombre="NotaRequerimiento" cantidad="*" />
+	</Nodo>
+
+	<Nodo nombre="NotaRequerimiento" formatoHijos="0">
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="descripcion" valor="" />
+	</Nodo>
+
+	<!-- Entrevista -->
+	<Nodo nombre="Entrevista" formatoHijo="2">
+		<Propiedad nombre="tipo" valor="Cuestionario" />
+		<Hijo nombre="PreguntasEntrevista" cantidad="1"/>	
+		<Hijo nombre="ResultadosEntrevista" cantidad="1"/>
+	</Nodo>
+
+	<Nodo nombre="PreguntasEntrevista">
+		<Hijo nombre="PreguntaEntrevista" cantidad="*"/>
+	</Nodo>
+
+	<Nodo nombre="ResultadosEntrevista">
+		<Hijo nombre="DatosEntrevista" cantidad="*"/>
+	</Nodo>
+
+	<Nodo nombre="PreguntaEntrevista">
+		<Propiedad nombre="idPregunta" valor="" />
+		<Propiedad nombre="texto" valor="" />
+		<Hijo nombre="RespuestaPreguntaEntrevista" cantidad="*"/>
+	</Nodo>
+
+	<Nodo nombre="DatosEntrevista">
+		<Propiedad nombre="idEntrevistado" valor="" />
+		<Propiedad nombre="fechaInicio" valor="" />
+		<Propiedad nombre="fechaFinal" valor="" />
+		<Hijo nombre="RespuestaDatosEntrevista" cantidad="*"/>
+	</Nodo>
+
+	<Nodo nombre="RespuestaPreguntaEntrevista">
+		<Propiedad nombre="idRespuesta" valor="" />
+		<Propiedad nombre="texto" valor="" />
+	</Nodo>
+
+	<Nodo nombre="RespuestaDatosEntrevista">
+		<Propiedad nombre="idPregunta" valor="" />
+		<Propiedad nombre="idRespuesta" valor="" />
+	</Nodo>
+
+
+	<!-- Diagrama de Casos de Uso -->
+	<Nodo nombre="CasosUso" formatoHijos="*">
+		<Propiedad nombre="tipo" valor="CasoUso" />
+		<Hijo nombre="PaqueteCasosUso" cantidad="*" />
+		<Hijo nombre="RelacionCasosUso" cantidad="*" />
+	</Nodo>
+
+	<Nodo nombre="PaqueteCasosUso" formatoHijos="">
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="idPaquete" valor="" />
+		<Propiedad nombre="comentario" valor="" />
+		<Hijo nombre="PaqueteCasosUso" cantidad="*" />
+		<Hijo nombre="ActorCasoUso" cantidad="*" />
+		<Hijo nombre="CasoUsoCasosUso" cantidad="*" />
+	</Nodo>
+
+	<Nodo nombre="ActorCasoUso" formatoHijos="0">
+		<Propiedad nombre="idActor" valor="" />
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="comentario" valor="" />
+	</Nodo>
+
+	<Nodo nombre="CasoUsoCasosUso" formatoHijos="0">
+		<Propiedad nombre="idActor" valor="" />
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="descripcionBreve" valor="" />
+		<Propiedad nombre="comentario" valor="" />
+	</Nodo>
+
+	<Nodo nombre="RelacionCasosUso" formatoHijos="0">
+		<Propiedad nombre="idRelacion" valor="" />
+		<Propiedad nombre="tipoRelacion" valor="CaC|AaC|AaA|OJOTipoLinea" />
+		<Propiedad nombre="idOrigen" valor="" />
+		<Propiedad nombre="idDestino" valor="" />
+		<Propiedad nombre="comentario" valor="" />
+	</Nodo>
+
+	<!-- Diagramas de Secuencia -->
+	<Nodo nombre="DescripcionCasosUso" formatoHijos="*">
+		<Propiedad nombre="tipo" valor="DescripcionCasoUso" />
+		<Propiedad nombre="idCasoUso" valor="" />
+		<Hijo nombre="Precondicion" cantidad="*" />
+		<Hijo nombre="Postcondicion" cantidad="*" />
+		<Hijo nombre="UML2DiagramaSecuencia" cantidad="1" />
+	</Nodo>
+
+	<Nodo nombre="PrecondicionDescripcionCasosUso" formatoHijos="0">
+		<Propiedad nombre="nombre" valor="" />
+		<Contenido />
+	</Nodo>
+
+	<Nodo nombre="PostcondicionDescripcionCasosUso" formatoHijos="0">
+		<Propiedad nombre="nombre" valor="" />
+		<Contenido />
+	</Nodo>
+
+	<Nodo nombre="UML2DiagramaSecuencia" formatoHijos="0">
+		<Hijo nombre="AccionDiagramaSecuencia" cantidad="*" />
+		<Hijo nombre="FragmentoDiagramaSecuencia" cantidad="*" />
+	</Nodo>
+
+	<Nodo nombre="AccionDiagramaSecuencia" formatoHijos="0">
+		<Propiedad nombre="origen" valor="" />
+		<Propiedad nombre="destino" valor="" />
+		<Propiedad nombre="mensaje" valor="" />
+		<Propiedad nombre="retorno" valor="" />
+	</Nodo>
+
+	<Nodo nombre="FragmentoDiagramaSecuencia" formatoHijos="*">
+		<Propiedad nombre="nombre" valor="" />
+		<Hijo nombre="AccionDiagramaSecuencia" cantidad="*" />
+		<Hijo nombre="FragmentoDiagramaSecuencia" cantidad="*" />
+	</Nodo>
+
+
+	<!-- Diagramas de Clases -->
+	<Nodo nombre="DiagramaClases" formatoHijos="*">
+		<Propiedad nombre="tipo" valor="DiagramaClases" />
+		<Hijo nombre="Clase" cantidad="*" />
+	</Nodo>
+
+	<Nodo nombre="ClaseDiagramaClases" formatoHijos="*">
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="tipo" valor="interfaz|control|entidad" />
+		<Hijo nombre="PropiedadClaseDiagramaClases" cantidad="*"/>
+		<Hijo nombre="MetodoClaseDiagramaClases" cantidad="*"/>
+	</Nodo>
+
+	<Nodo nombre="PropiedadClaseDiagramaClases" formatoHijos="*">
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="tipo" valor="" />
+		<Propiedad nombre="tipoLlave" valor="" />
+		<Propiedad nombre="descripcion" valor="" />
+		<Propiedad nombre="tablaClaveForanea" valor="" />
+		<Propiedad nombre="campoClaveForanea" valor="" />
+		<Propiedad nombre="campoTextoClaveForanea" valor="" />
+		<Propiedad nombre="titulo" valor="" />
+		<Propiedad nombre="unico" valor="" />
+		<Propiedad nombre="requerido" valor="" />
+		<Propiedad nombre="listadoPrincipal" valor="" />
+		<Propiedad nombre="valorDefecto" valor="" />
+		<Propiedad nombre="valorMinimo" valor="" />
+		<Propiedad nombre="valorMaximo" valor="" />
+		<Propiedad nombre="numeroCaracteres" valor="" />
+		<Hijo nombre="ValorPropiedadClaseDiagramaClases" cantidad="0!=tipo(Lista)|*==tipo(Lista)"/>
+	</Nodo>
+	<Nodo nombre="ValorPropiedadClaseDiagramaClases" formatoHijos="*">
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="valor" valor="" />
+	</Nodo>
+
+	<Nodo nombre="MetodoClaseDiagramaClases" formatoHijos="*">
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="retorno" valor="" />
+		<Hijo nombre="ParametroMetodoClaseDiagramaClases" cantidad="*"/>
+	</Nodo>
+	<Nodo nombre="ParametroMetodoClaseDiagramaClases" formatoHijos="*">
+		<Propiedad nombre="nombre" valor="" />
+		<Propiedad nombre="tipo" valor="" />
+	</Nodo>
+</Nodos>
+
+
+
+
+

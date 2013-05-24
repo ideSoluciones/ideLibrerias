@@ -1,0 +1,14 @@
+
+
+Para el funcionamiento de este componente se utiliza Text_Diff
+
+para instalarlo en Debian/Ubuntu se ejecuta estos comandos:
+ sudo apt-get install php-pear
+ sudo pear install Text_Diff
+ 
+Sintaxis:
+ 
+http://pear.reversefold.com/dokuwiki/text_diff:samplepage
+ 
+ 
+ 

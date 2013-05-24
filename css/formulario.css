@@ -1,0 +1,36 @@
+.divEtiquetaSimpleFormulario{
+
+}
+
+.etiquetaSimpleFormulario{
+	color: blue;
+	font-weight:bold;
+	width: 200px;
+}
+
+.etiquetaFormulario{
+	color: blue;
+	font-weight:bold;
+	width: 200px;
+	float: left;
+}
+.tituloFormulario{
+	color: green;
+	font-weight:bolder;
+}
+
+.campoFormulario{
+	padding: 5px;
+}
+
+.formulario{
+	clear: both;
+}
+
+.checkFormulario{
+	float: left;
+}
+.formulario{
+	border: 1px solid;
+}
+

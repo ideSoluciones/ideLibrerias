@@ -1,0 +1,3 @@
+.mensajeError{
+	background:transparent url($pathCliente/../Externos/iconos/tango/32x32/status/dialog-error.png) no-repeat scroll 0 0;
+}

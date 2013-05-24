@@ -1,0 +1,46 @@
+/*
+
+EN TODA IMPLEMENTACIÓN DE ESTE COMPONENTE SE DEBE COLOCAR ESTOS DOS ESTILOS EN EL PROYECTO
+
+.carrousel{
+	width: 330px;
+}
+.carrousel li{
+	width: 330px;
+	height: 250px;
+}
+*/
+.carrousel{
+	/*width: 330px;  Defines the size of the visible part of the carousel
+		Attention : if you only want to see plain items in the viewport,
+		the width of the viewport should take into account of :
+		- the items width
+		- the right and left padding of items
+		- the number of items you want to see in the viewport
+	 */
+	overflow:hidden; /* Hides extra elements, those outside the viewport area */
+}
+.carrousel ul{
+	position: relative; /* Enables positionning of elements inside viewport */
+	padding: 0; /* Resets default - User Agent - style */
+	margin-left:0px;
+}
+.carrousel li{
+	/*width: 330px;  Defines the size of inner element 
+	height: 250px;*/
+	float: left; /* Places list items side by side*/
+	list-style: none; /* Resets default - User Agent - style */
+	padding:0px;
+	/* Cosmetic */
+}
+
+/* Cosmetic */
+.carrouselPrev, .carrouselNext{
+	cursor: pointer;
+	font-size: 0.8em;
+	text-decoration: underline;	
+}
+.carrouselPrev{
+	float:left;
+	margin-right:20px;
+}

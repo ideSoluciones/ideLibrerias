@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>jQuery Infinite Carousel Demo</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="demo_files/periscope-theme-switcher.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="demo_files/simple-list.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="../lib/jquery/jquery-1.3.2.js">
+		</script>
+		<script type="text/javascript" src="../jquery.infinite-carousel.js">
+		</script>
+		<script type="text/javascript">
+			$(function(){
+				//$('#slider-stage').carousel('#previous', '#next');
+				$('#viewport').carousel('#simplePrevious', '#simpleNext');  
+			});
+		</script>
+	</head>
+	<body class="deco">
+		<h1 class="hl">jQuery Infinite Carousel Demo</h1>
+		<div class="demo">
+			
+		<h2 class="hl">Basic example</h2>
+<div id="viewport">
+	<ul>
+		<li>1</li>
+		<li>2</li>
+		<li>3</li>
+		<li>4</li>
+		<li>5</li>
+	</ul>
+</div>
+<a id="simplePrevious">previo</a>
+<a id="simpleNext">siguiente</a>
+		</div>
+		<div class="demo">
+		<h2 class="hl">Advanced example, courtesy <a href="http://www.byperiscope.com">Periscope Creations</a></h2>
+			<div id="sliderBloc">
+				<a id="previous">Previous</a>
+				<div style="" id="slider-stage">
+					<div style="width: 512px;" id="slider-list">
+						<a class="theme"><img src="demo_files/theme1.png" alt="Periscope angels " height="120" width="120" />
+							<span class="nameVignette">Periscope angels </span>
+							<span class="changeTheme">changer le thème</span>
+						</a>
+						<a class="theme"><img src="demo_files/theme2.jpg" alt="ice-cream mountains" height="120" width="120" />
+							<span class="nameVignette">ice-cream mountains</span>
+							<span class="changeTheme">changer le thème</span>
+						</a>
+					</div>
+				</div>
+				<a id="next">Next</a>
+			</div>
+		</div>
+	</body>
+</html>

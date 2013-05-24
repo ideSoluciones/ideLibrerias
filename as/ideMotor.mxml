@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:ide="ide.display.*"
+	xmlns:dyd="com.dyd.*"
+   	paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"	
+    width="100%" height="100%"  
+	 >
+  <mx:Script>
+        <![CDATA[
+			import mx.controls.Alert;
+			protected function inicio():void
+			{
+				base.lista();
+				width=Application.application.parameters.ancho;
+				height=Application.application.parameters.alto;
+
+			}
+		  ]]>
+    </mx:Script>	 
+	<ide:ideBase
+   	paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
+		id="base"
+		title="MotorXML"
+    	creationComplete="inicio();"
+	/>
+</mx:Application>
+

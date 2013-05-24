@@ -1,0 +1,12 @@
+
+
+Para el funcionamiento de este componente se utiliza fpdf
+
+para instalarlo en Debian/Ubuntu se ejecuta estos comandos:
+ sudo apt-get install php-fpdf
+ 
+para instalarlo desde archivo comprimido
+ http://www.fpdf.org/
+
+
+ 

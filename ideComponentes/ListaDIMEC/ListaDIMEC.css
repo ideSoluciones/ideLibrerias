@@ -1,0 +1,51 @@
+.ListaDIMECC_iconoAgregar{
+	background-image:url($pathCliente/../Librerias/img/agregar.png);
+	background-repeat:no-repeat;
+	background-position:1px 1px;
+	min-width:18px;
+	min-height:19px;
+	/*height:18px;*/
+}
+
+.ListaDIMECC_iconoAgregarConTexto{
+	background-image:url($pathCliente/../Librerias/img/agregar.png);
+	background-repeat:no-repeat;
+	background-position:1px 1px;
+	min-width:18px;
+	min-height:19px;
+	/*height:18px;*/
+	padding-left:18px;
+}
+
+.ListaDIMECC_iconoFiltro{
+	background-image:url($pathCliente/../Librerias/img/filtro.png);
+	background-repeat:no-repeat;
+	background-position:1px 1px;
+	min-width:18px;
+	min-height:19px;
+	/*height:18px;*/
+}
+
+.ListaDIMECC_iconoFiltroConTexto{
+	background-image:url($pathCliente/../Librerias/img/filtro.png);
+	background-repeat:no-repeat;
+	background-position:1px 1px;
+	min-width:18px;
+	min-height:19px;
+	/*height:18px;*/
+	padding-left:18px;
+}
+
+.contenedorPrincipal a{
+	color:#1B75BB;
+	font-weight:bold;
+	text-decoration:none;
+}
+.contenedorPrincipal a:hover{
+	color:#0B559B !important;
+	background:none !important;
+}
+.tablaListaDIMECC{
+	border:1px dotted;
+	margin-bottom:5px;
+}

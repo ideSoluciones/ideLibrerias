@@ -1,0 +1,21 @@
+.pregunta{
+	padding:5px;
+	border-bottom:1px solid black;
+	overflow:hidden;
+}
+.textoPregunta{
+	font-weight:bold;
+	color:#3b3b3b;
+	padding-bottom:10px;
+	overflow:hidden;
+}
+
+.opcion{
+	overflow:hidden;
+	padding:5px;
+}
+
+.respuestasTest{
+	padding-left:20px;
+	overflow:hidden;
+}
