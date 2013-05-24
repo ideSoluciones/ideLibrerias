@@ -97,7 +97,7 @@
 		*/
 
 		function nombreMenu_logout($sesion){
-			return "";
+			return "Salida";
 		}
 		function generarContenido_logout($sesion){
 
