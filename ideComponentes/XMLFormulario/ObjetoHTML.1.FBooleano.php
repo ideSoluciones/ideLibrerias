@@ -26,13 +26,16 @@
 					$estilo.=($propiedades["error"]==true?"error ":"");
 				}
 			}
-			$estilo.="contenedorCampoFormulario".$propiedades["tipo"]." campoFormulario";
-			$otrosAtributos="";
+			$estilo.= "contenedorCampoFormulario".$propiedades["tipo"]." campoFormulario";
+			$otrosAtributos = "";
+			$clase = "";
 			foreach ($propiedades as $a => $i){
 				if (strcmp($a,"funcionCambio")==0){
 					$otrosAtributos.=" onChange='".$i."(this);'";
 				}elseif (strcmp($a,"estilo")==0){
 					$otrosAtributos.=" style='".$i."' ";
+				}elseif (strcmp($a,"clase")==0){
+					$clase=$i;
 				}else{
 					//$otrosAtributos.=" ".$a."=".$i;
 				}
@@ -45,7 +48,7 @@
 			$total="";
 			if (isset($propiedades["titulo"]))
 			$total.="	<div id='".$this->getIdObjeto()."Titulo' class='".$estilo."Titulo  etiquetaFormulario'>".$propiedades["titulo"]."</div>\n";
-			$total.="		<input id='".$this->getIdObjeto()."' class='".$estilo."Booleano' $otrosAtributos type='checkbox' name='".$this->getNombre()."'
+			$total.="		<input id='".$this->getIdObjeto()."' class='".$clase." ".$estilo."Booleano' $otrosAtributos type='checkbox' name='".$this->getNombre()."'
 							value='true'
 							".(
 								$propiedades["valorPorDefecto"]=='1' || 

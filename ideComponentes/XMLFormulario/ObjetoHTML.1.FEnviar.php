@@ -79,7 +79,7 @@
 
 			$total.="<input type='$tipo' name='".$this->getNombre()."' 
 					value='".$titulo."' 
-					style='".$estilo."' 
+					class='btn ".$estilo."' 
 					id='".$id."' />
 			";
 		
