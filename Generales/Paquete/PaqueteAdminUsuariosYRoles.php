@@ -77,7 +77,7 @@
 
 //		relacionUsuariosRoles
 		function nombreMenu_relacionUsuariosRoles($sesion){
-			return "Relación/Roles de los Usuarios";
+			return "Administrar/Roles de los Usuarios";
 		}
 		function generarContenido_relacionUsuariosRoles($sesion){
 			$contenido=xml::add(null, "Contenido");

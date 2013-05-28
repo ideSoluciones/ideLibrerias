@@ -89,16 +89,11 @@
 					//array_splice($this->js, 0, 0, "Librerias/js/php.full.min.js");
 				}
 				*/
-				array_splice($this->js, 0, 0, "Librerias/js/ideFunciones.js");
-				array_splice($this->js, 0, 0, "Librerias/js/ideAjax.js");
 				$sesion = Sesion::getInstancia();
-				if ($sesion->leerParametro("idUsuario")=="2"){
-					array_splice($this->js, 0, 0, "Externos/jquery/jqueryui-temas/jquery-ui-1.10.2.custom.min.js");
-					array_splice($this->js, 0, 0, "Externos/jquery/jquery-1.9.1.min.js");
-				}else{
-					array_splice($this->js, 0, 0, "Externos/jquery/jqueryui-temas/jquery-ui.min.js");
-					array_splice($this->js, 0, 0, "Externos/jquery/jquery.js");
-				}
+				array_splice($this->js, 1, 0, "Librerias/js/ideFunciones.js");
+				array_splice($this->js, 1, 0, "Librerias/js/ideAjax.js");
+				array_splice($this->js, 1, 0, "Externos/jquery/jqueryui-temas/jquery-ui-1.10.2.custom.min.js");
+				array_splice($this->js, 0, 0, "Externos/jquery/jquery-1.9.1.min.js");
 			}
 			$respuesta.=$this->imprimirArreglo($this->js, "<script type='text/javascript' src='".resolverPath()."/", "'></script>\n");
 			return $respuesta;

@@ -67,7 +67,7 @@
 
 		//Relacion Usuario CasoUso
 		function nombreMenu_relacionUsuarioCasoUso($sesion){
-			return "Relación/Permisos de los Usuarios";
+			return "Administrar/Permisos de los Usuarios";
 		}
 		function generarContenido_relacionUsuarioCasoUso($sesion){
 			$contenido=xml::add(null, "Contenido");
@@ -99,7 +99,7 @@
 
 		//Relacion Rol CasoUso
 		function nombreMenu_relacionRolCasoUso($sesion){
-			return "Relación/Permisos de los Roles";
+			return "Administrar/Permisos de los Roles";
 		}
 		function generarContenido_relacionRolCasoUso($sesion){
 			$contenido=xml::add(null, "Contenido");
