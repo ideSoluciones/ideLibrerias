@@ -40,8 +40,8 @@
 
 			
 			
-			$wiki = $contenido->addChild('Wiki');
-			$wiki[] = '==Ingresando al sistema==';
+			xml::add($contenido, "Html", '<style>#Formulario1{margin: 0px;height: 300px;}</style>');
+
 			$Formulario = $contenido->addChild('Formulario');
 			$Propiedad = $Formulario->addChild('Propiedad');
 			$Propiedad->addAttribute('nombre','idCasoUso');
