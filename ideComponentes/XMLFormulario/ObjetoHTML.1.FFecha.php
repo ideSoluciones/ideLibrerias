@@ -37,13 +37,8 @@
 			}
 			$this->agregarJs("Externos/jquery/ui.datepicker-es.js");
 			$sesion = Sesion::getInstancia();
-			if ($sesion->leerParametro("idUsuario")=="2"){
-				$this->agregarCss("Externos/jquery/jquery.timepickr/jquery.timepicker.css");
-				$this->agregarJs("Externos/jquery/jquery.timepickr/jquery.timepicker.min.js");
-			}else{
-				$this->agregarCss("Externos/jquery/jquery.timepickr/timePicker.css");
-				$this->agregarJs("Externos/jquery/jquery.timepickr/jquery.timePicker.js");
-			}
+			$this->agregarCss("Externos/jquery/jquery.timepickr/jquery.timepicker.css");
+			$this->agregarJs("Externos/jquery/jquery.timepickr/jquery.timepicker.min.js");
 		}
 
 		public static function validar($campo,$valorDato){
@@ -196,11 +191,7 @@ $total.="
 
 
 				$sesion = Sesion::getInstancia();
-				if ($sesion->leerParametro("idUsuario")=="2"){
-					$total.="$('#".$propiedades["id"]."_hora').timepicker( {'timeFormat':'H:i', 'step':15 });";
-				}else{
-					$total.="$('#".$propiedades["id"]."_hora').timePicker( {step:15 });";
-				}
+				$total.="$('#".$propiedades["id"]."_hora').timepicker( {'timeFormat':'H:i', 'step':15 });";
 
 
 				$total.="	
