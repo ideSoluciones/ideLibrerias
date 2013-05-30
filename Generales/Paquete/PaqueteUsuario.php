@@ -22,7 +22,7 @@
 				$voUsuario=$controlUsuario->autenticarUsuario($sesion->leerParametroDestinoActual("Usuario"), md5($sesion->leerParametroDestinoActual("Pass")));
 				// Se settea una variable con el incremento de la renovación de expiración de sesión
 				$timeout=$sesion->leerParametroFormularioActual("timeout");
-				msg::add($timeout);
+				//msg::add($timeout);
 				if ($timeout==""){
 					$timeout = 30;
 				}
@@ -34,7 +34,7 @@
 					Control0Usuario::ingresoUsuario($contenido,$voUsuario,resolverPath()."/".$destino,$timeout);
 					return $contenido;
 				}else{
-					xml::add($wiki, 'Wiki', "==Error Accediendo==\nUsuario o contraseña invalido, intente de nuevo:");
+					xml::add($contenido, 'Wiki', "==Error Accediendo==\nUsuario o contraseña invalido, intente de nuevo:");
 				}
 			}
 
