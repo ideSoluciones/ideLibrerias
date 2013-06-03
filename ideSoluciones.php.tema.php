@@ -235,7 +235,7 @@ class tema extends ComponentePadre{
 		$respuesta.= "<meta name='author' content='".$this->configuracion->autor."' />\n";
 		$respuesta.= "<meta name='description' content='".$this->configuracion->descripcion."' />\n";
 		$respuesta.= "<meta name='keywords' content='".$this->configuracion->keywords."' />\n";
-		$respuesta.= "<link rel='shortcut icon' href='".resolverPath()."/".$this->configuracion->favicon."' type='image/x-icon' />\n\n";
+		//$respuesta.= "<link rel='shortcut icon' href='".resolverPath()."/".$this->configuracion->favicon."' type='image/x-icon' />\n\n";
 		return $respuesta;
 	}
 	function getHead(){
