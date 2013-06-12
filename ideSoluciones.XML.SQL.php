@@ -1,21 +1,18 @@
 <?php
 
-	require_once("ideSoluciones.XML.general.php");
-	include_once("ideSoluciones.php.general.php");
+	//use Doctrine\Common\ClassLoader;
+
+	//require '/usr/share/php/Doctrine/Common/ClassLoader.php';
+
+	define("SQL_CONSULTA","SQL_CONSULTA");
+	define("SQL_ACTUALIZACION","SQL_ACTUALIZACION");
+	define("SQL_ELIMINACION","SQL_ELIMINACION");
+	define("SQL_EJECUTAR","SQL_EJECUTAR");
+	define("SQL_INSERCION","SQL_INSERCION");
 	
-	define("MOTOR_MySQL", "MOTOR_MySQL");
-	define("MySQL_CONSULTA","MySQL_CONSULTA");
-	define("MySQL_ACTUALIZACION","MySQL_ACTUALIZACION");
-	define("MySQL_ELIMINACION","MySQL_ELIMINACION");
-	define("MySQL_EJECUTAR","MySQL_EJECUTAR");
-	define("MySQL_INSERCION","MySQL_INSERCION");
-	
-	define("MOTOR_SQLite", "MOTOR_SQLite");
-	define("SQLite_CONSULTA","SQLite_CONSULTA");
-	define("SQLite_ACTUALIZACION","SQLite_ACTUALIZACION");
-	define("SQLite_ELIMINACION","SQLite_ELIMINACION");
-	define("SQLite_EJECUTAR","SQLite_EJECUTAR");
-	define("SQLite_INSERCION","SQLite_INSERCION");
+	/*$classLoader = new ClassLoader('Doctrine', '/usr/share/php');
+	$classLoader->register();
+	$config = new \Doctrine\DBAL\Configuration();*/
 	
 	/**
 	*    @name XMLSQL
@@ -29,295 +26,464 @@
 		
 	class XMLSQL extends generalXML{
 	
-		var $nombreBD;
-		var $userBD;
-		var $passBD;
-		var $hostBD;
 		var $conn;
+		var $pool=array();
 		var $tipo;
 		var $registros;
 		var $Error;
 		public $sql;
 		var $ultimoId;
 		
-		private $prefijoTabla;
+		function table_exists ($table) { 
+			$prefijo=$this->conn["pconn"]["prefijo"];
+			$schema=$this->conn["conn"]->getSchemaManager();
+			$tables = $schema->listTables();
+			foreach($tables as $tabla){
+				if (strcmp($tabla->getName(), $prefijo.$table)==0){
+					return TRUE;
+				}
+			}
+			return FALSE;
+		}
 
-		function setPrefijoTabla($prefijoTabla){
-			$this->prefijoTabla=$prefijoTabla;
-		}
-		function getPrefijoTabla(){
-			return $this->prefijoTabla;
-		}
 		
-		function XMLSQL($nombreBD, $userBD, $passBD, $hostBD, $motor, $prefijoTabla=""){
-			$this->nombreBD = $nombreBD;
-			$this->userBD = $userBD;
-			$this->passBD= $passBD;
-			$this->hostBD= $hostBD;
-			$this->registros=array();
-			$this->Error=0;
-			$this->ultimoId=0;
-			$this->setPrefijoTabla($prefijoTabla);
-			switch($motor){
-				case MOTOR_MySQL:
-					//mysqli_report(MYSQLI_REPORT_ALL);
-					$this->conexionMySQL();
-					$this->tipo=MOTOR_MySQL;
-					break;
-				case MOTOR_SQLite:
-					$this->conexionSQLite();
-					$this->tipo=MOTOR_SQLite;
-					break;
-				default:
-					$this->Error=1;
+		function XMLSQL($listp=null){
+			if(is_array($listp)){
+				$primera=true;
+				foreach($listp as $id=>$p){
+					$this->addConn($id,$p);
+				}
 			}
 		}
 		
-		function conexionMySQL(){
-			try{
-				$this->conn = new mysqli($this->hostBD, $this->userBD, $this->passBD, $this->nombreBD);
-				if (mysqli_connect_errno()) {
-					if (mysqli_connect_errno()==1049){
-						asercion("No existe la base de datos ".$this->nombreBD.".");
+		function addConn($id,$p){
+			if(is_array($p)){
+				$paramConexion = array();
+				if(isset($p["driver"])){
+					# dbname (string): Name of the database/schema to connect to.
+					$paramConexion["driver"]=$p["driver"];
+					# prefijo (string): Prefijo usado en las tablas.
+					if(isset($p["prefijo"])){
+						$paramConexion["prefijo"]=$p["prefijo"];
 					}else{
-						asercion($this->errorToString(4)."<br>[".mysqli_connect_errno().", ".mysqli_connect_error()."]");
+						$paramConexion["prefijo"]="";
+					}
+					switch($p["driver"]){
+						case "pdo_mysql":
+							# user (string): Username to use when connecting to the database.
+							if(isset($p["user"])){
+								$paramConexion["user"]=$p["user"];
+							}
+							# password (string): Password to use when connecting to the database.
+							if(isset($p["password"])){
+								$paramConexion["password"]=$p["password"];
+							}
+							# host (string): Hostname of the database to connect to.
+							if(isset($p["host"])){
+								$paramConexion["host"]=$p["host"];
+							}
+							# port (integer): Port of the database to connect to.
+							if(isset($p["port"])){
+								$paramConexion["port"]=$p["port"];
+							}
+							# dbname (string): Name of the database/schema to connect to.
+							if(isset($p["dbname"])){
+								$paramConexion["dbname"]=$p["dbname"];
+							}
+							# unix_socket (string)
+							if(isset($p["unix_socket"])){
+								$paramConexion["unix_socket"]=$p["unix_socket"];
+							}
+							break;
+						case "pdo_sqlite":
+							# user (string): Username to use when connecting to the database.
+							if(isset($p["user"])){
+								$paramConexion["user"]=$p["user"];
+							}
+							# password (string): Password to use when connecting to the database.
+							if(isset($p["password"])){
+								$paramConexion["password"]=$p["password"];
+							}
+							# path (string): The filesystem path to the database file. Mutually exclusive with memory. path takes precedence.
+							if(isset($p["path"])){
+								$paramConexion["path"]=$p["path"];
+							}
+							# memory (boolean): True if the SQLite database should be in-memory (non-persistent). Mutually exclusive with path. path takes precedence.
+							if(isset($p["memory"])){
+								$paramConexion["memory"]=$p["memory"];
+							}
+							break;
+						case "pdo_pgsql":
+							# user (string): Username to use when connecting to the database.
+							if(isset($p["user"])){
+								$paramConexion["user"]=$p["user"];
+							}
+							# password (string): Password to use when connecting to the database.
+							if(isset($p["password"])){
+								$paramConexion["password"]=$p["password"];
+							}
+							# host (string): Hostname of the database to connect to.
+							if(isset($p["host"])){
+								$paramConexion["host"]=$p["host"];
+							}
+							# port (integer): Port of the database to connect to.
+							if(isset($p["port"])){
+								$paramConexion["port"]=$p["port"];
+							}
+							# dbname (string): Name of the database/schema to connect to.
+							if(isset($p["dbname"])){
+								$paramConexion["dbname"]=$p["dbname"];
+							}
+							break;
+						case "pdo_oci":case "oci8":
+							# user (string): Username to use when connecting to the database.
+							if(isset($p["user"])){
+								$paramConexion["user"]=$p["user"];
+							}
+							# password (string): Password to use when connecting to the database.
+							if(isset($p["password"])){
+								$paramConexion["password"]=$p["password"];
+							}
+							# user (string): Username to use when connecting to the database.
+							if(isset($p["host"])){
+								$paramConexion["host"]=$p["host"];
+							}
+							# password (string): Password to use when connecting to the database.
+							if(isset($p["host"])){
+								$paramConexion["host"]=$p["host"];
+							}
+							# host (string): Hostname of the database to connect to.
+							if(isset($p["host"])){
+								$paramConexion["host"]=$p["host"];
+							}
+							# port (integer): Port of the database to connect to.
+							if(isset($p["host"])){
+								$paramConexion["host"]=$p["host"];
+							}
+							# dbname (string): Name of the database/schema to connect to.
+							if(isset($p["host"])){
+								$paramConexion["host"]=$p["host"];
+							}
+							# charset (string): The charset used when connecting to the database.
+							if(isset($p["host"])){
+								$paramConexion["host"]=$p["host"];
+							}
+							break;
+					}
+					# Se agrega al POOL los parametros de conexión
+					$this->pool[$id]=array("pconn"=>$paramConexion,"conn"=>"");
+					
+					# Si es la primera conexión, se señala con un apuntador como default
+					if(count($this->pool)==1){
+						$this->conn=&$this->pool[$id];
 					}
 				}
-			}catch(Exception $e){
-				throw new XMLSQLException("Ocurrio un error, [".$e->getMessage()."].");
-				asercion($this->errorToString(4)."<br>[".$e->getMessage()."]");
 			}
 		}
-
-		function conexionSQLite(){
+		
+		function openConn(&$pool){
+			$conn=null;
+			if(is_array($pool)){
+				if(isset($pool["pconn"])&&isset($pool["conn"])){
+					if(is_null($pool["conn"])||$pool["conn"]==""){
+						$conn = \Doctrine\DBAL\DriverManager::getConnection($pool["pconn"]);
+						$pool["conn"]=$conn;
+					}else{
+						$conn=$pool["conn"];
+					}
+				}
+			}
+			return $conn;
+		}
+		
+		function consultar($XMLSQL,$id=null){
 			try{
-				$this->conn = new SQLiteDatabase($this->hostBD."/".$this->nombreBD);
-				if(!$this->conn){
-				//if (!$this->conn = sqlite_open($this->hostBD."/".$this->nombreBD, 0666, $sqliteerror)) {
-					//throw new XMLSQLException("Ocurrio un error, [".$e->getMessage()."].");
-					asercion($this->errorToString(4)."<br>[".$sqliteerror."]");
+				$conn=null;
+				$this->registros=array();
+				$prefijo="";
+				$driver="";
+				if(!is_null($id)){
+					if(isset($this->pool["$id"])){
+						$conn=$this->openConn($this->pool["$id"]);
+						$prefijo=$this->pool["$id"]["pconn"]["prefijo"];
+						$driver=$this->pool["$id"]["pconn"]["driver"];
+					}
+				}else{
+					$conn=$this->openConn($this->conn);
+					$prefijo=$this->conn["pconn"]["prefijo"];
+					$driver=$this->conn["pconn"]["driver"];
 				}
-			}catch(Exception $e){
-				//throw new XMLSQLException("Ocurrio un error, [".$e->getMessage()."].");
-				asercion($this->errorToString(4)."<br>[".$e->getMessage()."]");
+				if(!is_null($conn)){
+					$this->sql=$this->XMLSQL_To_DQL($XMLSQL,SQL_CONSULTA,$prefijo,$driver);
+					$statement = $conn->prepare($this->sql);
+					$statement->execute();
+					$this->registros = $statement->fetchAll();
+				}else{
+					throw new XMLSQLException("No se pudo establecer la conexión [$id].");
+				}
+			}catch(PDOException $e){
+				throw new XMLSQLException("Ocurrio un error, [".$e->getMessage()."][".$this->conn["pconn"]["driver"]."][".$this->sql."].");
 			}
+			return $this->registros;
 		}
+		
+		function insertar($XMLSQL, $id=null){
+			try{
+				$conn=null;
+				$prefijo="";
+				$driver="";
+				if(!is_null($id)){
+					if(isset($this->pool["$id"])){
+						$conn=$this->openConn($this->pool["$id"]);
+						$prefijo=$this->pool["$id"]["pconn"]["prefijo"];
+						$driver=$this->pool["$id"]["pconn"]["driver"];
+					}
+				}else{
+					$conn=$this->openConn($this->conn);
+					$prefijo=$this->conn["pconn"]["prefijo"];
+					$driver=$this->conn["pconn"]["driver"];
+				}
+				if(!is_null($conn)){
+					$this->sql=$this->XMLSQL_To_DQL($XMLSQL,SQL_INSERCION,$prefijo,$driver);
+					$count = $conn->executeUpdate($this->sql);
 
-		function consultar($XMLSQL,$encode=false, $debug=false){
-			$this->registros=array();
-			if($this->Error!=4){
-				switch($this->tipo){
-					case MOTOR_MySQL:
-						try{
-							$this->sql=$this->XMLSQL_To_MySQL($XMLSQL,MySQL_CONSULTA);
-							registrarlog("<br><b>SQL:</b>".$this->sql);
-							if ($debug)
-								msg::add($this->sql);
-							if($resultado=$this->conn->query($this->sql)){
-								if(mysqli_errno($this->conn)) asercion("Ocurrio un error: [".mysqli_error($this->conn)."]");
-/*								if (strncmp($this->sql,"SELECT sistemaVET_VistaBoletas.* FROM sistemaVET_VistaBoletas WHERE (sistemaVET_VistaBoletas.idEvento = '6' AND (sistemaVET_VistaBoletas.idEstado = '7' OR sistemaVET_VistaBoletas.idEstado = '12')) ;", 150)==0){
-									echo $this->sql,"<br>";
-									//throw new Exception('Esta consulta');
+					switch($driver){
+						case "pdo_mysql":case "pdo_sqlite": case "pdo_oci":case "oci8":
+							$this->ultimoId=$conn->lastInsertId();
+							break;
+						case "pdo_pgsql":
+							try{
+								$ids=$conn->fetchAssoc("SELECT lastval();");
+								if(isset($ids["lastval"])){
+									$this->ultimoId=$ids["lastval"];
+								}else{
+									$this->ultimoId=0;
 								}
-*/								while ($valor = $resultado->fetch_array()) {
-									/*if($encode){
-										foreach($valor as $val){
-											//$val=base64_encode($val);
-										}
-									}*/
-									$this->registros[]=$valor;
-								}
-							}else{
-								$this->Error=3;
+							}catch(Exception $e){
+								$this->ultimoId=0;
 							}
-						}catch (Exception $e) {
-							throw new XMLSQLException("Ocurrio un error, [".$e->getMessage()."].");
-						}
-						break;
-					case MOTOR_SQLite:
-						try{
-							$this->sql=$this->XMLSQL_To_SQLite($XMLSQL,SQLite_CONSULTA);
-							if($resultado=$this->conn->query($this->sql)){
-								if(mysqli_errno($this->conn)) asercion("Ocurrio un error: [".mysqli_error($this->conn)."]");
-								while ($valor = $resultado->fetch_array()) {
-									$this->registros[]=$valor;
-								}
-							}else{
-								$this->Error=3;
-							}
-						}catch (Exception $e) {
-							throw new XMLSQLException("Ocurrio un error, [".$e->getMessage()."].");
-						}
-						break;
-					default:
-						$this->$Error=1;
-						return array();
+							break;
+					}
+					return true;
+				}else{
+					throw new XMLSQLException("No se pudo establecer la conexión [$id].");
 				}
+			}catch(PDOException $e){
+				# Validación de registros duplicados SQLite
+				if($e->errorInfo[0]==23000 && $e->errorInfo[1]==19 ){
+					$val=explode(" ",$e->errorInfo[2],3);
+					$mensaje=array("mensaje"=>"Registro duplicado.","campo"=>$val[1],"valor"=>"");
+					throw new XMLSQLExcepcionRegistroDuplicado(json_encode($mensaje));
+				}
+				
+				# Validación de registros duplicados MySQL
+				if($e->errorInfo[0]==23000 && $e->errorInfo[1]==1062 ){
+					$tmp=explode("Duplicate entry '",$e->errorInfo[2]);
+					$tmp=explode("' for key '",$tmp[1]);
+					$tmp[1]=substr($tmp[1], 0, -1);
+					$mensaje=array("mensaje"=>"Registro duplicado.","campo"=>$tmp[1],"valor"=>$tmp[0]);
+					throw new XMLSQLExcepcionRegistroDuplicado(json_encode($mensaje));
+				}
+				
+				# Validación de registros duplicados Postgres
+				if($e->errorInfo[0]==23505 && $e->errorInfo[1]==7 ){
+					$mensaje=array("mensaje"=>"Registro duplicado.","campo"=>"","valor"=>"");
+					throw new XMLSQLExcepcionRegistroDuplicado(json_encode($mensaje));
+				}
+
+				throw new XMLSQLException("No se pudo insertar el nuevo registro, ocurrio un error [".$e->getMessage()."].");
+			}
+			return false;
+		}
+		
+		function ejecutar($XMLSQL,$id=null){
+			try{
+				$conn=null;
+				$driver="";
+				$prefijo="";
+				$this->registros=array();
+				if(!is_null($id)){
+					if(isset($this->pool["$id"])){
+						$conn=$this->openConn($this->pool["$id"]);
+						$driver=$this->pool["$id"]["pconn"]["driver"];
+						$prefijo=$this->pool["$id"]["pconn"]["prefijo"];
+					}
+				}else{
+					$conn=$this->openConn($this->conn);
+					$driver=$this->conn["pconn"]["driver"];
+					$prefijo=$this->conn["pconn"]["prefijo"];
+				}
+				if(!is_null($conn)){
+					$this->sql=$this->XMLSQL_To_DQL($XMLSQL,SQL_EJECUTAR,$prefijo,$driver);
+					$statement = $conn->prepare($this->sql);
+					$statement->execute();
+				}else{
+					throw new XMLSQLException("No se pudo establecer la conexión [$id].");
+				}
+			}catch(PDOException $e){
+				throw new XMLSQLException("No se pudo ejecutar el procedimiento, [".$e->getMessage()."].");
 			}
 			return $this->registros;
 		}
 		
-		function insertar($XMLSQL, $debug=false){
-			if($this->Error!=4){
-				switch($this->tipo){
-					case MOTOR_MySQL:
-						$this->sql=$this->XMLSQL_To_MySQL($XMLSQL,MySQL_INSERCION);
-						if($resultado=$this->conn->query($this->sql)){
-							$this->ultimoId=$this->conn->insert_id;
-							return true;
-						}else{
-							//var_dump(mysqli_error($this->conn));
-							if (intval(mysqli_errno($this->conn))==1062){
-								$error=mysqli_error($this->conn);
-								$tmp=explode("Duplicate entry '",$error);
-								$tmp=explode("' for key '",$tmp[1]);
-								$tmp[1]=substr($tmp[1], 0, -1);
-								$mensaje=array("mensaje"=>"Registro duplicado.","campo"=>$tmp[1],"valor"=>$tmp[0]);
-								throw new XMLSQLExcepcionRegistroDuplicado(json_encode($mensaje));
-							}else{
-								throw new XMLSQLException("No se pudo insertar el nuevo registro, [".mysqli_error($this->conn)."].");
-							}
-						}
-						break;
-					case MOTOR_SQLite:
-						$this->sql=$this->XMLSQL_To_SQLite($XMLSQL,SQLite_INSERCION);
-						if($debug) registrarlog("<b>Insertando </b>".$this->sql."<br>");
-						if($resultado=$this->conn->query('call XDB_insertar("'.$this->sql.'");')){
-							if(mysqli_errno($this->conn)) asercion("Ocurrio un error: [".mysqli_error($this->conn)."]");
-							$valor = $resultado->fetch_array();
-							$this->ultimoId=$valor["id"];
-							$resultado=$this->conn->query('select 1 as a;');
-							mysqli_next_result($this->conn);
-							return true;
-						}else{
-							throw new XMLSQLException("No se pudo insertar el nuevo registro, [".mysqli_error($this->conn)."].");
-						}
-						break;
-					default:
-						$this->Error=1;
-						$this->ultimoId=0;
-						return false;
+		function dql($sql, $id=null){
+			try{
+				$conn=null;
+				$prefijo="";
+				$driver="";
+				$this->registros=array();
+				if(!is_null($id)){
+					if(isset($this->pool["$id"])){
+						$conn=$this->openConn($this->pool["$id"]);
+						$prefijo=$this->pool["$id"]["pconn"]["prefijo"];
+					}
+				}else{
+					$conn=$this->openConn($this->conn);
+					$prefijo=$this->conn["pconn"]["prefijo"];
 				}
-			}
-			return false;
-		}
-		
-		function ejecutar($XMLSQL){
-			//registrarlog("<hr><b>".date("Y-m-d G:i:s")."</b><br>XMLSQL::ejecutar");
-			//registrarlog("<br><b>XMLSQL:</b>".htmlspecialchars($XMLSQL));
-			$this->registros=array();
-			if($this->Error!=4){
-				switch($this->tipo){
-					case MOTOR_MySQL:
-						$this->sql=$this->XMLSQL_To_MySQL($XMLSQL,MySQL_EJECUTAR);
-						//registrarlog("<br><b>SQL:<b>".$this->sql);
-						if($resultado=$this->conn->query($this->sql)){
-							if(mysqli_errno($this->conn)) asercion("Ocurrio un error: [".mysqli_error($this->conn)."]");
-							if (!is_bool($resultado)){
-								while ($valor = $resultado->fetch_array()) {
-									$this->registros[]=$valor;
-								}
-								$resultado=$this->conn->query('select 1 as a;');
-								mysqli_next_result($this->conn);
-							}
-						}else{
-							throw new XMLSQLException("No se pudo ejecutar el procedimiento, [".mysqli_error($this->conn)."].");
-						}
-						break;
-					default:
-						$this->Error=1;
+				if(!is_null($conn)){
+					$this->sql=str_replace("PREFIJO",$prefijo,$sql);
+					$statement = $conn->prepare($this->sql);
+					$statement->execute();
+					$this->registros = $statement->fetchAll();
+				}else{
+					throw new XMLSQLException("No se pudo establecer la conexión [$id].");
 				}
+			}catch(PDOException $e){
+				throw new XMLSQLException("No se pudo ejecutar el procedimiento, [".$e->getMessage()."].");
 			}
-			//registrarlog("<b>");
 			return $this->registros;
 		}
 		
-		function mysql($sql){
-			$sql=str_replace("PREFIJO",$this->getPrefijoTabla(),$sql);
-			if($resultado=$this->conn->query($sql)){
-				if(mysqli_errno($this->conn)) asercion("Ocurrio un error: [".mysqli_error($this->conn)."]");
-				return true;
-			}else{
-				mensaje::add("No se pudo ejecutar el script, [".mysqli_error($this->conn)."].");
-				return false;
-			}
-		}
-		
-		function eliminar($XMLSQL){
-			if($this->Error!=4){
-				switch($this->tipo){
-					case MOTOR_MySQL:
-						$this->sql=$this->XMLSQL_To_MySQL($XMLSQL,MySQL_ELIMINACION);
-						//new mensajes("Eliminando: ".$this->sql);
-						if($this->conn->query($this->sql)){
-							if(mysqli_errno($this->conn)) asercion("Ocurrio un error: [".mysqli_error($this->conn)."]");
-							return true;
-						}else{
-							//
-							throw new XMLSQLException("No se pudo eliminar el registro, [".mysqli_error($this->conn)."].");
-						}
-						break;
-					default:
-						$this->Error=1;
-						return false;
+		function eliminar($XMLSQL, $id=null){
+			try{
+				$conn=null;
+				$prefijo="";
+				$driver="";
+				if(!is_null($id)){
+					if(isset($this->pool["$id"])){
+						$conn=$this->openConn($this->pool["$id"]);
+						$prefijo=$this->pool["$id"]["pconn"]["prefijo"];
+						$driver=$this->pool["$id"]["pconn"]["driver"];
+					}
+				}else{
+					$conn=$this->openConn($this->conn);
+					$prefijo=$this->conn["pconn"]["prefijo"];
+					$driver=$this->conn["pconn"]["driver"];
 				}
+				if(!is_null($conn)){
+					$this->sql=$this->XMLSQL_To_DQL($XMLSQL,SQL_ELIMINACION,$prefijo,$driver);
+					$count = $conn->executeUpdate($this->sql);
+					return true;
+				}else{
+					throw new XMLSQLException("No se pudo establecer la conexión [$id].");
+				}
+			}catch(PDOException $e){
+				throw new XMLSQLException("No se pudo eliminar el registro, ocurrio un error [".$e->getMessage()."].");
 			}
 			return false;
 		}
 		
-		function actualizar($XMLSQL){
-			if($this->Error!=4){
-				switch($this->tipo){
-					case MOTOR_MySQL:
-						$this->sql=$this->XMLSQL_To_MySQL($XMLSQL,MySQL_ACTUALIZACION);
-						//registrarlog("<b>Actualizando:</b> ".$XMLSQL->asXML()." -> ".$this->sql."<br>");
-						///echo "<b>Actualizando:</b> ".$XMLSQL." -> ".$this->sql."<br>";
-						if($this->conn->query($this->sql)){
-							///echo "Lugar1: [".mysqli_error($this->conn)."]";
-							if (mysqli_errno($this->conn)==1062){
-								throw new XMLSQLExcepcionRegistroDuplicado(mysqli_error($this->conn));
-							}elseif (mysqli_errno($this->conn)!=0){
-								throw new XMLSQLException("No se pudo actualizar el nuevo registro, [".mysqli_error($this->conn)."].");
-							}
-							return true;
-						}
-						///echo "Lugar2: ".mysqli_error($this->conn);
-						break;
-					default:
-						$this->Error=1;
-						return false;
+		function actualizar($XMLSQL, $id=null){
+			try{
+				$conn=null;
+				$prefijo="";
+				$driver="";
+				if(!is_null($id)){
+					if(isset($this->pool["$id"])){
+						$conn=$this->openConn($this->pool["$id"]);
+						$prefijo=$this->pool["$id"]["pconn"]["prefijo"];
+						$driver=$this->pool["$id"]["pconn"]["driver"];
+					}
+				}else{
+					$conn=$this->openConn($this->conn);
+					$prefijo=$this->conn["pconn"]["prefijo"];
+					$driver=$this->conn["pconn"]["driver"];
 				}
+				if(!is_null($conn)){
+					$this->sql=$this->XMLSQL_To_DQL($XMLSQL,SQL_ACTUALIZACION,$prefijo,$driver);
+					$count = $conn->executeUpdate($this->sql);
+					return true;
+				}else{
+					throw new XMLSQLException("No se pudo establecer la conexión [$id].");
+				}
+			}catch(PDOException $e){
+				# Validación de registros duplicados SQLite
+				if($e->errorInfo[0]==23000 && $e->errorInfo[1]==19 ){
+					$val=explode(" ",$e->errorInfo[2],3);
+					$mensaje=array("mensaje"=>"Registro duplicado.","campo"=>$val[1],"valor"=>"");
+					throw new XMLSQLExcepcionRegistroDuplicado(json_encode($mensaje));
+				}
+				
+				# Validación de registros duplicados MySQL
+				if($e->errorInfo[0]==23000 && $e->errorInfo[1]==1062 ){
+					$tmp=explode("Duplicate entry '",$e->errorInfo[2]);
+					$tmp=explode("' for key '",$tmp[1]);
+					$tmp[1]=substr($tmp[1], 0, -1);
+					$mensaje=array("mensaje"=>"Registro duplicado.","campo"=>$tmp[1],"valor"=>$tmp[0]);
+					throw new XMLSQLExcepcionRegistroDuplicado(json_encode($mensaje));
+				}
+				
+				# Validación de registros duplicados Postgres
+				if($e->errorInfo[0]==23505 && $e->errorInfo[1]==7 ){
+					$mensaje=array("mensaje"=>"Registro duplicado.","campo"=>"","valor"=>"");
+					throw new XMLSQLExcepcionRegistroDuplicado(json_encode($mensaje));
+				}
+
+				throw new XMLSQLException("No se pudo actulizar el registro, ocurrio un error [".$e->getMessage()."].");
 			}
 			return false;
 		}
 		
-		function numeroRegistros($XMLSQL=null){
-			//echo "Num registros.<br>";
-			$no=-1;
-			if($this->Error!=4){
-				switch($this->tipo){
-					case MOTOR_MySQL:
-						if($XMLSQL!=null){
-							//registrarlog("<hr>XMLSQL numeroRegistros:".htmlspecialchars($XMLSQL->asXML())."<hr>");
-							$sql=$this->XMLSQL_To_MySQL($XMLSQL,MySQL_CONSULTA);
-							//registrarlog("<hr>SQL".$sql."<hr>");
-							$resultado=mysqli_query($this->conn,$sql);
-							if(mysqli_errno($this->conn)) asercion("Ocurrio un error: [".mysqli_error($this->conn)." | <br>$sql]");
-							$no=mysqli_num_rows($resultado);
-						}else{
-							$no=count($this->registros);
-						}
-						break;
-					default:
-						$this->Error=1;
-						return 0;
+		function numeroRegistros($XMLSQL=null, $id=null){
+			try{
+				$conn=null;
+				$no=-1;
+				$prefijo="";
+				$driver="";
+				if(!is_null($id)){
+					if(isset($this->pool["$id"])){
+						$conn=$this->openConn($this->pool["$id"]);
+						$prefijo=$this->pool["$id"]["pconn"]["prefijo"];
+						$driver=$this->pool["$id"]["pconn"]["driver"];
+					}
+				}else{
+					$conn=$this->openConn($this->conn);
+					$prefijo=$this->conn["pconn"]["prefijo"];
+					$driver=$this->conn["pconn"]["driver"];
 				}
+				if(!is_null($conn)){
+					$this->sql=$this->XMLSQL_To_DQL($XMLSQL,SQL_CONSULTA,$prefijo,$driver);
+					$statement = $conn->prepare($this->sql);
+					$statement->execute();
+					$no = $statement->rowCount();
+				}else{
+					throw new XMLSQLException("No se pudo establecer la conexión [$id].");
+				}
+			}catch(PDOException $e){
+				throw new XMLSQLException("Ocurrio un error, [".$e->getMessage()."].");
 			}
-			//registrarlog("<hr>No".$no."<hr>");
 			return $no;
 		}
 		
-		function XMLSQL_To_MySQL($XMLSQL,$tipo){
+		function ajusteNombre($texto,$driver,$t='"'){
+			switch($driver){
+				case "pdo_mysql":case "pdo_sqlite":
+					return $texto;
+					break;
+				case "pdo_oci":case "oci8":
+					return strtolower($texto);
+					break;
+				case "pdo_pgsql":
+					if(strcmp($texto,"*")!=0){
+						return $t.$texto.$t;
+					}
+					return $texto;
+					break;
+			}
+		}
+		
+		function XMLSQL_To_DQL($XMLSQL,$tipo,$prefijo="",$driver=""){
 			$MySQL="";
 			$tablas=array();
 			$campos=array();
@@ -326,28 +492,39 @@
 			$tablasC="";
 			$valoresC="";
 			$nombreProc="";
+			//$prefijo=$this->ajusteNombre($prefijo,$driver);
 			if(is_object($XMLSQL)){
 				$xml = $XMLSQL;
 			}else{
 				$xml = simplexml_load_string($XMLSQL);
 			}
 			switch($tipo){
-				case MySQL_EJECUTAR:
+				case SQL_EJECUTAR:
 					$xmltmp=$xml->xpath('Ejecutar');
 					foreach($xmltmp as $nodo){
 						$nombreProc=$nodo[0]["nombre"];
 						$parametrosProc=$nodo[0]["parametros"];
 					}
-					$MySQL="CALL $nombreProc($parametrosProc);";
+					switch($driver){
+						case "pdo_mysql":
+							$MySQL="CALL $nombreProc($parametrosProc);";
+							break;
+						case "pdo_sqlite":
+							break;
+						case "pdo_pgsql":
+							$MySQL="SELECT $nombreProc($parametrosProc);";
+							break;
+						case "pdo_oci":case "oci8":
+							break;
+					}
 					break;
 				default:
 					//CAMPOS Y TABLAS
 					$xmltmp=$xml->xpath('Campo');
 					if(is_array($xmltmp)){
 						foreach($xmltmp as $nodo){
-							$a=$this->getPrefijoTabla().$nodo[0]["tablaOrigen"];
-							//asercion(revisarArreglo($a));
-							if($tipo==MySQL_INSERCION||$tipo==MySQL_ACTUALIZACION){
+							$a=$this->ajusteNombre($prefijo.$nodo[0]["tablaOrigen"],$driver,isset($nodo[0]["comilla"])?$nodo[0]["comilla"]:'"');
+							if($tipo==SQL_INSERCION||$tipo==SQL_ACTUALIZACION){
 								if (is_null($nodo[0]["valor"]))
 									$valores[]="NULL";
 								else
@@ -356,16 +533,15 @@
 							if(isset($nodo[0]["tablaOrigen"])){
 								$tablas["$a"]=1;
 							}
-							$campos[]=(isset($nodo[0]["tablaOrigen"])?($tipo==MySQL_CONSULTA?$this->getPrefijoTabla().$nodo[0]["tablaOrigen"].".":""):"").$nodo[0]["nombre"].(isset($nodo[0]["titulo"])?($tipo==MySQL_CONSULTA?" AS ".$nodo[0]["titulo"]:""):"");
-						}
-					}
-					if($tipo==MySQL_INSERCION || $tipo==MySQL_CONSULTA){
-						if($tipo==MySQL_INSERCION){
-							$valoresC.=implode(",",$valores);
+							$campos[]=(isset($nodo[0]["tablaOrigen"])?($tipo==SQL_CONSULTA?$this->ajusteNombre($prefijo.$nodo[0]["tablaOrigen"],$driver).".":""):"").$this->ajusteNombre($nodo[0]["nombre"],$driver,isset($nodo[0]["comilla"])?$nodo[0]["comilla"]:'"').(isset($nodo[0]["titulo"])?($tipo==SQL_CONSULTA?" AS ".$this->ajusteNombre($nodo[0]["titulo"],$driver):""):"");
 						}
 					}
 
-					if($tipo==MySQL_ACTUALIZACION){
+					if($tipo==SQL_INSERCION){
+						$valoresC.=implode(",",$valores);
+					}
+
+					if($tipo==SQL_ACTUALIZACION){
 						$campval=array();
 						for($i=0;$i<count($campos);$i++){
 							$campval[]=$campos[$i]."=".$valores[$i];
@@ -373,15 +549,16 @@
 						$valoresA=implode(",",$campval);
 					}
 			
-					if($tipo==MySQL_CONSULTA){
+					if($tipo==SQL_CONSULTA){
 						//RELACIONES ENTRE TABLAS
 						$xmltmp2=$xml->xpath('Relacion');
 						if(is_array($xmltmp2)){
 							$tablasC.=" FROM ";
 							if(count($xmltmp2)>0){
 								$condicionesJoins= array();
-									$arrTablas=array();
-									$arrCondicion=array();
+								$arrTablas=array();
+								$arrTablasJoin=array();
+								$arrCondicion="";
 								$almenosUnaRelacion=false;
 								foreach($xmltmp2 as $xmltmp){
 									if(count($xmltmp->children())>0){
@@ -390,38 +567,49 @@
 										$tablaAnterior="";
 										$campoAnterior="";
 										foreach($xmltmpTablas as $nodo){
-											$a=$this->getPrefijoTabla().$nodo[0]["nombre"];
-											$arrTablas["$a"]="";
 											if (strcmp($nodo[0]["tablaDestino"], $nodo[0]["nombre"])==0){
-												$elefante=$this->getPrefijoTabla().$nodo[0]["tablaDestino"]." as virtual_".$nodo[0]["tablaDestino"];
-												$arrTablas["$elefante"]="1";
-												$campos[]="virtual_".$nodo[0]["tablaDestino"].".".$nodo[0]["campoTextoClaveForanea"]." as ".$nodo[0]["campoAliasTextoClaveForanea"];
-												$arrCondicion[]="virtual_".$nodo[0]["tablaDestino"].".".$nodo[0]["campoDestino"].
+												$b=$this->ajusteNombre($prefijo.$nodo[0]["tablaDestino"],$driver)." as ".$this->ajusteNombre("virtual_".$nodo[0]["tablaDestino"],$driver);
+												$campos[]=$this->ajusteNombre("virtual_".$nodo[0]["tablaDestino"],$driver).".".$this->ajusteNombre($nodo[0]["campoTextoClaveForanea"],$driver)." as ".$this->ajusteNombre($nodo[0]["campoAliasTextoClaveForanea"],$driver);
+												$arrCondicion=$this->ajusteNombre("virtual_".$nodo[0]["tablaDestino"],$driver).".".$this->ajusteNombre($nodo[0]["campoDestino"],$driver).
 															"=".
-																$this->getPrefijoTabla().$nodo[0]["nombre"].".".$nodo[0]["campo"];
+																$this->ajusteNombre($prefijo.$nodo[0]["nombre"],$driver).".".$this->ajusteNombre($nodo[0]["campo"],$driver);
+												$a=$this->ajusteNombre($prefijo.$nodo[0]["nombre"],$driver);
+												$arrTablas["$a"]="";
+												$arrTablas["$b"]=$arrCondicion;
+												$arrTablasJoin["$b"]="".(string)$nodo[0]["tipo"];
 											}else if(strlen($nodo[0]["tablaDestino"])>0 && strlen($nodo[0]["campoDestino"])>0){
-												//@todo cambiar el nombre de la variable elefante por una mas adecuada
-												$elefante=$this->getPrefijoTabla().$nodo[0]["tablaDestino"];
-												$arrTablas["$elefante"]="1";
-												$arrCondicion[]=$this->getPrefijoTabla().$nodo[0]["tablaDestino"].".".$nodo[0]["campoDestino"].
+												$b=$this->ajusteNombre($prefijo.$nodo[0]["nombre"],$driver);
+												$arrCondicion=$this->ajusteNombre($prefijo.$nodo[0]["tablaDestino"],$driver).".".$this->ajusteNombre($nodo[0]["campoDestino"],$driver).
 															"=".
-																$this->getPrefijoTabla().$nodo[0]["nombre"].".".$nodo[0]["campo"];
+																$this->ajusteNombre($prefijo.$nodo[0]["nombre"],$driver).".".$this->ajusteNombre($nodo[0]["campo"],$driver);
+												$arrTablas["$b"]=$arrCondicion;
+												$arrTablasJoin["$b"]=$nodo[0]["tipo"];
 											}else{
+												$arrCondicion="";
 												if(strlen($tablaAnterior)>0){						
-													$arrCondicion[]=$this->getPrefijoTabla().$tablaAnterior.".".$campoAnterior.
+													$arrCondicion=$this->ajusteNombre($prefijo.$tablaAnterior,$driver).".".$this->ajusteNombre($campoAnterior,$driver).
 																"=".
-																	$this->getPrefijoTabla().$nodo[0]["nombre"].".".$nodo[0]["campo"];
+																	$this->ajusteNombre($prefijo.$nodo[0]["nombre"],$driver).".".$this->ajusteNombre($nodo[0]["campo"],$driver);
 												}
+												$a=$this->ajusteNombre($prefijo.$nodo[0]["nombre"],$driver);
+												$arrTablas["$a"]=$arrCondicion;
+												$arrTablasJoin["$a"]=$nodo[0]["tipo"];
 											}
 											$tablaAnterior=$nodo[0]["nombre"];
 											$campoAnterior=$nodo[0]["campo"];
 										}
-										$condicionesJoins[]=implode(" AND ",$arrCondicion);
 									}
 								}
 								if($almenosUnaRelacion){
-									$tablasC.=implode(" JOIN ",array_keys($arrTablas))." ON ";
-									$tablasC.=implode(" AND ", $condicionesJoins);
+									$primero=true;
+									foreach($arrTablas as $t=>$c){
+										if($primero){
+											$tablasC.=$t;
+											$primero=false;
+										}else{
+											$tablasC.=" ".$arrTablasJoin[$t]." JOIN ".$t." ON ".$c;
+										}
+									}
 								}else{
 									$tablasC.=implode(",",array_keys($tablas));
 								}
@@ -431,19 +619,33 @@
 						}
 					}
 
-					if($tipo==MySQL_INSERCION || $tipo==MySQL_CONSULTA){
+					if($tipo==SQL_INSERCION || $tipo==SQL_CONSULTA){
 						$camposC.=implode(",",$campos);
 					}		
 
 					//LIMITAR
-					/*Colocados por los logs de php*/$limitante="";
+					$limitante="";
 					$xmltmp=$xml->xpath('Limitar');
 					if(is_array($xmltmp)){
 						if(count($xmltmp)>0){
-							if(strlen($xmltmp[0][0]["regInicial"])>0){
-								$limitante.=" LIMIT ".$xmltmp[0][0]["regInicial"].",".$xmltmp[0][0]["noRegistros"];
-							}else{
-								$limitante.=" LIMIT ".$xmltmp[0][0]["noRegistros"];
+							switch($driver){
+								case "pdo_mysql":
+									if(strlen($xmltmp[0][0]["regInicial"])>0){
+										$limitante.=" LIMIT ".$xmltmp[0][0]["regInicial"].",".$xmltmp[0][0]["noRegistros"];
+									}else{
+										$limitante.=" LIMIT ".$xmltmp[0][0]["noRegistros"];
+									}
+									break;
+								case "pdo_sqlite":case "pdo_pgsql":
+									if(strlen($xmltmp[0][0]["regInicial"])>0){
+										$limitante.=" LIMIT ".$xmltmp[0][0]["noRegistros"]." OFFSET ".$xmltmp[0][0]["regInicial"];
+									}else{
+										$limitante.=" LIMIT ".$xmltmp[0][0]["noRegistros"];
+									}
+									break;
+								case "pdo_oci":case "oci8":
+									/*TODO*/
+									break;
 							}
 						}
 					}
@@ -454,8 +656,13 @@
 					$xmltmp=$xml->xpath('Ordenar/OrdenarCampo');
 					if(is_array($xmltmp)){
 						if(count($xmltmp)>0){
-							$tmpOrden=$this->extraerNodoArreglo($xmltmp,"analizarOrden");
-							$Orden=" ORDER BY ".implode(",",$tmpOrden);
+							$tmpAgrupar=$this->extraerNodo1pArray($xmltmp,"analizarOrden",array("driver"=>$driver,"prefijo"=>$prefijo));
+							if(is_array($tmpAgrupar)){
+								$Orden=" ORDER BY ".implode(",",$tmpAgrupar);
+							}
+							if(is_string($tmpAgrupar)){
+								$Orden=" OREDER BY ".$tmpAgrupar;
+							}
 						}
 					}
 					
@@ -465,8 +672,13 @@
 					$xmltmp=$xml->xpath('Agrupar/AgruparCampo');
 					if(is_array($xmltmp)){
 						if(count($xmltmp)>0){
-							$tmpAgrupar=$this->extraerNodoArreglo($xmltmp,"analizarOrden");
-							$Agrupar=" GROUP BY ".implode(",",$tmpAgrupar);
+							$tmpAgrupar=$this->extraerNodo1pArray($xmltmp,"analizarOrden",array("driver"=>$driver,"prefijo"=>$prefijo));
+							if(is_array($tmpAgrupar)){
+								$Agrupar=" GROUP BY ".implode(",",$tmpAgrupar);
+							}
+							if(is_string($tmpAgrupar)){
+								$Agrupar=" GROUP BY ".$tmpAgrupar;
+							}
 						}
 					}
 			
@@ -474,8 +686,8 @@
 					$xmltmp=$xml->xpath('Condiciones');
 					if(is_array($xmltmp)){
 						if(count($xmltmp)>0){
-							$cond=$this->analizarCondiciones($xmltmp);
-							if(strcmp($this->analizarCondiciones($xmltmp),"")!=0){
+							$cond=$this->analizarCondiciones($xmltmp,$prefijo,$driver);
+							if(strcmp($cond,"")!=0){
 								$condicionesC=" WHERE ".$cond." ";
 							}
 						}
@@ -483,34 +695,47 @@
 			
 					$tmp=array_keys($tablas);
 					switch($tipo){
-						case MySQL_CONSULTA:
-							$MySQL="SELECT ".$camposC.$tablasC.$condicionesC.$Agrupar.$Orden.$limitante.";";
+						case SQL_CONSULTA:
+							$MySQL="SELECT ".$camposC.$tablasC.$condicionesC.$Orden.$Agrupar.$limitante.";";
 							break;
-						case MySQL_ACTUALIZACION:
+						case SQL_ACTUALIZACION:
 							$MySQL="UPDATE ".$tmp[0]." SET ".$valoresA.$condicionesC.";";
 							break;
-						case MySQL_ELIMINACION:
+						case SQL_ELIMINACION:
 							$MySQL="DELETE FROM ".$tmp[0].$condicionesC.$limitante.";";
 							break;
-						case MySQL_INSERCION:
+						case SQL_INSERCION:
 							$MySQL="INSERT INTO ".$tmp[0]."(".$camposC.") VALUES (".$valoresC.");";
 							break;
 						default:
 					}
 			}
+
 			return $MySQL;
 		}
 		
-		function analizarOrden($nodo){
-			return $nodo["campo"]." ".$nodo["modo"];
+		function analizarOrden($nodo,$params){
+			$tabla="";
+			if(isset($nodo["tabla"])){
+				$tabla=$this->ajusteNombre($params["prefijo"].$nodo["tabla"],$params["driver"]).".";
+			}
+			if(isset($nodo["modo"])){
+				return $tabla.$this->ajusteNombre($nodo["campo"],$params["driver"])." ".$nodo["modo"];
+			}else{
+				return $tabla.$this->ajusteNombre($nodo["campo"],$params["driver"]);
+			}
 		}
 
-		function analizarCondiciones($xmltmp,$padre=null, $prof=0){
-			$totalHijos=count($xmltmp)-1;/*Colocados por los logs de php*/$temp="";
+		function analizarCondiciones($xmltmp,$prefijo,$driver,$padre=null, $prof=0){
+			$totalHijos=count($xmltmp)-1;
+			$temp="";
 			if($totalHijos>0)
 				$temp="(";
 			$j=0;
 			foreach($xmltmp as $i => $hijo){
+				$pre=(isset($hijo["pre"])?$hijo["pre"]:"");
+				$pos=(isset($hijo["pos"])?$hijo["pos"]:"");
+				$nombreCompletoTabla=(isset($hijo["noTabla"])?"":$this->ajusteNombre($prefijo.$hijo["tabla"],$driver).".");
 				if($hijo->getName()=="Y"){
 				}
 				if($hijo->getName()=="O"){
@@ -518,24 +743,29 @@
 				if($hijo->getName()=="Igual"){
 					if (strlen($hijo["tabla"])>0){
 						$comilla=isset($hijo["noComilla"])?"":"'";
-						$temp.= $this->getPrefijoTabla().$hijo["tabla"].".".$hijo["campo"]." = $comilla".$hijo["valor"]."$comilla";
+						$temp.= $pre.$nombreCompletoTabla.$this->ajusteNombre($hijo["campo"],$driver).$pos." = $comilla".$hijo["valor"]."$comilla";
 					}
 					if (strlen($hijo["tabla1"])>0){
-						$temp.= $this->getPrefijoTabla().$hijo["tabla1"].".".$hijo["campo1"]." = ".$this->getPrefijoTabla().$hijo["tabla2"].".".$hijo["campo2"];
+						$temp.= $pre.$this->ajusteNombre($prefijo.$hijo["tabla1"],$driver).".".$this->ajusteNombre($hijo["campo1"],$driver).$pos." = ".$this->ajusteNombre($prefijo.$hijo["tabla2"],$driver).".".$this->ajusteNombre($hijo["campo2"],$driver);
 					}
 				}
 				if($hijo->getName()=="EsNulo"){
 					if (strlen($hijo["tabla"])>0){
-						$temp.= $this->getPrefijoTabla().$hijo["tabla"].".".$hijo["campo"]." IS NULL ";
+						$temp.= $pre.$nombreCompletoTabla.$this->ajusteNombre($hijo["campo"],$driver).$pos." IS NULL ";
+					}
+				}
+				if($hijo->getName()=="NoEsNulo"){
+					if (strlen($hijo["tabla"])>0){
+						$temp.= $pre.$nombreCompletoTabla.$this->ajusteNombre($hijo["campo"],$driver).$pos." IS NOT NULL ";
 					}
 				}
 				if($hijo->getName()=="Diferente"){
 					if (strlen($hijo["tabla"])>0){
 						$comilla=isset($hijo["noComilla"])?"":"'";
-						$temp.= $this->getPrefijoTabla().$hijo["tabla"].".".$hijo["campo"]." <> $comilla".$hijo["valor"]."$comilla";
+						$temp.= $pre.$nombreCompletoTabla.$this->ajusteNombre($hijo["campo"],$driver).$pos." <> $comilla".$hijo["valor"]."$comilla";
 					}
 					if (strlen($hijo["tabla1"])>0){
-						$temp.= $this->getPrefijoTabla().$hijo["tabla1"].".".$hijo["campo1"]." <> ".$this->getPrefijoTabla().$hijo["tabla2"].".".$hijo["campo2"];
+						$temp.= $pre.$this->ajusteNombre($prefijo.$hijo["tabla1"],$driver).".".$this->ajusteNombre($hijo["campo1"],$driver).$pos." <> ".$this->ajusteNombre($prefijo.$hijo["tabla2"],$driver).".".$this->ajusteNombre($hijo["campo2"],$driver);
 					}
 				}
 				if($hijo->getName()=="Otro"){
@@ -555,27 +785,27 @@
 					}
 					if (strlen($hijo["tabla"])>0){
 						$comilla=isset($hijo["noComilla"])?"":"'";
-						$temp.= $this->getPrefijoTabla().$hijo["tabla"].".".$hijo["campo"]." ".$signo." $comilla".$hijo["valor"]."$comilla";
+						$temp.= $pre.$nombreCompletoTabla.$this->ajusteNombre($hijo["campo"],$driver).$pos." ".$signo." $comilla".$hijo["valor"]."$comilla";
 					}
 					if (strlen($hijo["tabla1"])>0){
-						$temp.= $this->getPrefijoTabla().$hijo["tabla1"].".".$hijo["campo1"]." ".$signo." ".$this->getPrefijoTabla().$hijo["tabla2"].".".$hijo["campo2"];
+						$temp.= $pre.$this->ajusteNombre($prefijo.$hijo["tabla1"],$driver).".".$this->ajusteNombre($hijo["campo1"],$driver).$pos." ".$signo." ".$this->ajusteNombre($prefijo.$hijo["tabla2"],$driver).".".$this->ajusteNombre($hijo["campo2"],$driver);
 					}
 				}
 				if(($hijo->getName()=="Como")>0){
 					if (strlen($hijo["tabla"])>0){
-						$temp.=$this->getPrefijoTabla().$hijo["tabla"].".".$hijo["campo"]." LIKE '".$hijo["valor"]."'";
+						$temp.=$pre.$nombreCompletoTabla.$this->ajusteNombre($hijo["campo"],$driver).$pos." LIKE '".$hijo["valor"]."'";
 					}else{
 						if (strlen($hijo["campo"])>0){
-							$temp.=$hijo["campo"]." LIKE '".$hijo["valor"]."'";
+							$temp.=$pre.$this->ajusteNombre($hijo["campo"],$driver).$pos." LIKE '".$hijo["valor"]."'";
 						}
 					}
 				}
 				if(($hijo->getName()=="ExpresionRegular")>0){
 					if (strlen($hijo["tabla"])>0){
-						$temp.=$this->getPrefijoTabla().$hijo["tabla"].".".$hijo["campo"]." REGEXP '".$hijo["valor"]."'";
+						$temp.=$pre.$nombreCompletoTabla.$this->ajusteNombre($hijo["campo"],$driver).$pos." REGEXP '".$hijo["valor"]."'";
 					}
 				}
-				$temp.=$this->analizarCondiciones($hijo,$hijo->getName(), $prof+1);
+				$temp.=$this->analizarCondiciones($hijo,$prefijo,$driver,$hijo->getName(), $prof+1);
 				if($j!=$totalHijos){
 					if($padre=="Y")
 						$temp.=" AND ";
@@ -587,179 +817,6 @@
 			if($totalHijos>0)
 				$temp.=")";
 			return $temp;
-		}
-		
-		function XMLSQL_To_SQLite($XMLSQL,$tipo){
-			$MySQL="";
-			$tablas=array();
-			$campos=array();
-			$valores=array();
-			$camposC="";
-			$tablasC="";
-			$valoresC="";
-			$nombreProc="";
-			if(is_object($XMLSQL)){
-				$xml = $XMLSQL;
-			}else{
-				$xml = simplexml_load_string($XMLSQL);
-			}
-			switch($tipo){
-				/*case MySQL_EJECUTAR:
-					$xmltmp=$xml->xpath('Ejecutar');
-					foreach($xmltmp as $nodo){
-						$nombreProc=$nodo[0]["nombre"];
-						$parametrosProc=$nodo[0]["parametros"];
-					}
-					$MySQL="CALL $nombreProc($parametrosProc);";
-					break;*/
-				default:
-					//CAMPOS Y TABLAS
-					$xmltmp=$xml->xpath('Campo');
-					if(is_array($xmltmp)){
-						foreach($xmltmp as $nodo){
-							$a=$this->getPrefijoTabla().$nodo[0]["tablaOrigen"];
-							//asercion(revisarArreglo($a));
-							if($tipo==MySQL_INSERCION||$tipo==MySQL_ACTUALIZACION){
-								if (is_null($nodo[0]["valor"]))
-									$valores[]="NULL";
-								else
-									$valores[]="'".$nodo[0]["valor"]."'";
-							}
-							if(isset($nodo[0]["tablaOrigen"])){
-								$tablas["$a"]=1;
-							}
-							$campos[]=(isset($nodo[0]["tablaOrigen"])?($tipo==MySQL_CONSULTA?$this->getPrefijoTabla().$nodo[0]["tablaOrigen"].".":""):"").$nodo[0]["nombre"].(isset($nodo[0]["titulo"])?($tipo==MySQL_CONSULTA?" AS ".$nodo[0]["titulo"]:""):"");
-						}
-					}
-					if($tipo==SQLite_INSERCION || $tipo==SQLite_CONSULTA){
-						if($tipo==SQLite_INSERCION){
-							$valoresC.=implode(",",$valores);
-						}
-					}
-
-					if($tipo==SQLite_ACTUALIZACION){
-						$campval=array();
-						for($i=0;$i<count($campos);$i++){
-							$campval[]=$campos[$i]."=".$valores[$i];
-						}
-						$valoresA=implode(",",$campval);
-					}
-			
-					if($tipo==SQLite_CONSULTA){
-						//RELACIONES ENTRE TABLAS
-						$xmltmp2=$xml->xpath('Relacion');
-						if(is_array($xmltmp2)){
-							$tablasC.=" FROM ";
-							if(count($xmltmp2)>0){
-								$condicionesJoins= array();
-									$arrTablas=array();
-									$arrCondicion=array();
-								foreach($xmltmp2 as $xmltmp){
-									$xmltmpTablas=$xmltmp[0]->xpath('Tabla');
-									$tablaAnterior="";
-									$campoAnterior="";
-									foreach($xmltmpTablas as $nodo){
-										$a=$this->getPrefijoTabla().$nodo[0]["nombre"];
-										$arrTablas["$a"]="";
-										if (strcmp($nodo[0]["tablaDestino"], $nodo[0]["nombre"])==0){
-											$elefante=$this->getPrefijoTabla().$nodo[0]["tablaDestino"]." as virtual_".$nodo[0]["tablaDestino"];
-											$arrTablas["$elefante"]="1";
-											$campos[]="virtual_".$nodo[0]["tablaDestino"].".".$nodo[0]["campoTextoClaveForanea"]." as ".$nodo[0]["campoAliasTextoClaveForanea"];
-											$arrCondicion[]="virtual_".$nodo[0]["tablaDestino"].".".$nodo[0]["campoDestino"].
-														"=".
-															$this->getPrefijoTabla().$nodo[0]["nombre"].".".$nodo[0]["campo"];
-										}else if(strlen($nodo[0]["tablaDestino"])>0 && strlen($nodo[0]["campoDestino"])>0){
-											//@todo cambiar el nombre de la variable elefante por una mas adecuada
-											$elefante=$this->getPrefijoTabla().$nodo[0]["tablaDestino"];
-											$arrTablas["$elefante"]="1";
-											$arrCondicion[]=$this->getPrefijoTabla().$nodo[0]["tablaDestino"].".".$nodo[0]["campoDestino"].
-														"=".
-															$this->getPrefijoTabla().$nodo[0]["nombre"].".".$nodo[0]["campo"];
-										}else{
-											if(strlen($tablaAnterior)>0){						
-												$arrCondicion[]=$this->getPrefijoTabla().$tablaAnterior.".".$campoAnterior.
-															"=".
-																$this->getPrefijoTabla().$nodo[0]["nombre"].".".$nodo[0]["campo"];
-											}
-										}
-										$tablaAnterior=$nodo[0]["nombre"];
-										$campoAnterior=$nodo[0]["campo"];
-									}
-									$condicionesJoins[]=implode(" AND ",$arrCondicion);
-								}
-								$tablasC.=implode(" JOIN ",array_keys($arrTablas))." ON ";
-								$tablasC.=implode(" AND ", $condicionesJoins);
-							}else{
-								$tablasC.=implode(",",array_keys($tablas));
-							}
-						}
-					}
-
-					if($tipo==SQLite_INSERCION || $tipo==SQLite_CONSULTA){
-						$camposC.=implode(",",$campos);
-					}		
-
-					//LIMITAR
-					/*Colocados por los logs de php*/$limitante="";
-					$xmltmp=$xml->xpath('Limitar');
-					if(is_array($xmltmp)){
-						if(count($xmltmp)>0){
-							if(strlen($xmltmp[0][0]["regInicial"])>0){
-								$limitante.=" LIMIT ".$xmltmp[0][0]["regInicial"].",".$xmltmp[0][0]["noRegistros"];
-							}else{
-								$limitante.=" LIMIT ".$xmltmp[0][0]["noRegistros"];
-							}
-						}
-					}
-			
-					//ORDENAR
-					$tmpOrden=array();
-					$Orden="";
-					$xmltmp=$xml->xpath('Ordenar/OrdenarCampo');
-					if(is_array($xmltmp)){
-						if(count($xmltmp)>0){
-							$tmpOrden=$this->extraerNodoArreglo($xmltmp,"analizarOrden");
-							$Orden=" ORDER BY ".implode(",",$tmpOrden);
-						}
-					}
-					
-					//AGRUPAR
-					$tmpAgrupar=array();
-					$Agrupar="";
-					$xmltmp=$xml->xpath('Agrupar/AgruparCampo');
-					if(is_array($xmltmp)){
-						if(count($xmltmp)>0){
-							$tmpAgrupar=$this->extraerNodoArreglo($xmltmp,"analizarOrden");
-							$Agrupar=" GROUP BY ".implode(",",$tmpAgrupar);
-						}
-					}
-			
-					$condicionesC="";
-					$xmltmp=$xml->xpath('Condiciones');
-					if(is_array($xmltmp)){
-						if(count($xmltmp)>0){
-							$condicionesC=" WHERE ". $this->analizarCondiciones($xmltmp)." ";
-						}
-					}
-			
-					$tmp=array_keys($tablas);
-					switch($tipo){
-						case SQLite_CONSULTA:
-							$MySQL="SELECT ".$camposC.$tablasC.$condicionesC.$Agrupar.$Orden.$limitante.";";
-							break;
-						case SQLite_ACTUALIZACION:
-							$MySQL="UPDATE ".$tmp[0]." SET ".$valoresA.$condicionesC.";";
-							break;
-						case SQLite_ELIMINACION:
-							$MySQL="DELETE FROM ".$tmp[0].$condicionesC.$limitante.";";
-							break;
-						case SQLite_INSERCION:
-							$MySQL="INSERT INTO ".$tmp[0]."(".$camposC.") VALUES (".$valoresC.");";
-							break;
-						default:
-					}
-			}
-			return $MySQL;
 		}
 		
 		function errorToString($error=null){
@@ -788,8 +845,6 @@
 			}
 			return $msj;
 		}
-		
-		
 	}
 
 ?>
