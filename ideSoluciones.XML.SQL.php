@@ -292,6 +292,15 @@
 				}
 
 				throw new XMLSQLException("No se pudo insertar el nuevo registro, ocurrio un error [".$e->getMessage()."].");
+			}catch(Doctrine\DBAL\DBALException $e){
+				//echo "Doctrine\DBAL\DBALException";
+				//echo $e->getMessage();
+				$duplicado = "Integrity constraint violation: 1062 Duplicate entry";
+				$pos = strpos($e->getMessage(), $duplicado);
+				if (! $pos === false) {
+					$mensaje=array("mensaje"=>"Registro duplicado.","campo"=>"","valor"=>"");
+					throw new XMLSQLExcepcionRegistroDuplicado(json_encode($mensaje));
+				}
 			}
 			return false;
 		}
