@@ -53,16 +53,16 @@ class ControlFormulario{
 		return ControlFormulario::agregarFormulario($nodo, $parametros);
 	}
 	public static function agregarFormulario($nodo, $parametros=array()){
-		if(!isset($parametros["idCasoUso"])){
-			$sesion=Sesion::getInstancia();
-			$parametros["idCasoUso"]=$sesion->leerParametro("idCasoUso");
-		}
 		if (is_null($nodo)){
 			$formulario=ControlXML::nuevo("Formulario");
 		}else{
 			$formulario = $nodo->addChild("Formulario");
 		}
         if (is_array($parametros)){
+			if(!isset($parametros["idCasoUso"])){
+				$sesion=Sesion::getInstancia();
+				$parametros["idCasoUso"]=$sesion->leerParametro("idCasoUso");
+			}
         	foreach($parametros as $nombre=>$parametro){
 	        	$propiedad = $formulario->addChild("Propiedad");
         		$propiedad->addAttribute("nombre", $nombre);
