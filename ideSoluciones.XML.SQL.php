@@ -696,7 +696,7 @@
 					$tmp=array_keys($tablas);
 					switch($tipo){
 						case SQL_CONSULTA:
-							$MySQL="SELECT ".$camposC.$tablasC.$condicionesC.$Orden.$Agrupar.$limitante.";";
+							$MySQL="SELECT ".$camposC.$tablasC.$condicionesC.$Agrupar.$Orden.$limitante.";";
 							break;
 						case SQL_ACTUALIZACION:
 							$MySQL="UPDATE ".$tmp[0]." SET ".$valoresA.$condicionesC.";";
