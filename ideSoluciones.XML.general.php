@@ -60,6 +60,20 @@ class generalXML extends generalPhp{
 		}
 		return $temp;
 	}
+	function extraerNodo1pArray($xmltmp, $funcion, $param){
+		$temp="";
+		if(is_array($xmltmp)){
+			$temp=array();
+			foreach($xmltmp as $nodo){
+				$temp[]=$this->$funcion($nodo,$param);
+			}
+		}else{
+			if(is_object($xmltmp)){
+				$temp=$this->$funcion($nodo,$param);
+			}
+		}
+		return $temp;
+	}
 
 
 	/**
