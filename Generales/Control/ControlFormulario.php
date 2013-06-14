@@ -84,6 +84,12 @@ class ControlFormulario{
 		$campo->addAttribute("tipo", 'enviar');
 		$campo->addAttribute("nombre", isset($parametros["nombre"])?siEsta($parametros["nombre"],"Enviar"):"Enviar");
 		$campo->addAttribute("titulo", isset($parametros["titulo"])?siEsta($parametros["titulo"],"Enviar"):"Enviar");
+		if (isset($parametros["id"])){
+			$campo->addAttribute("id", $parametros["id"]);
+		}
+		if (isset($parametros["estilo"])){
+			$campo->addAttribute("estilo", $parametros["estilo"]);
+		}
 		return $campo;
 	}
 
