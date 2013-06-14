@@ -2,23 +2,20 @@
 	class VO1FormularioDatos{
 		protected $idFormularioDatos=null;
 		protected $idFormulario=null;
-		protected $xmlDatosEnvio=null;
-		protected $xmlDatosFormulario=null;
-		protected $activo=null;
-		function VO1FormularioDatos($idFormularioDatos=null,$idFormulario=null,$xmlDatosEnvio=null,$xmlDatosFormulario=null,$activo=null){
+		protected $datosEnvio=null;
+		protected $datosFormulario=null;
+		function VO1FormularioDatos($idFormularioDatos=null,$idFormulario=null,$datosEnvio=null,$datosFormulario=null){
 			if(!is_null($idFormularioDatos)) $this->setIdFormularioDatos($idFormularioDatos);
 			if(!is_null($idFormulario)) $this->setIdFormulario($idFormulario);
-			if(!is_null($xmlDatosEnvio)) $this->setXmlDatosEnvio($xmlDatosEnvio);
-			if(!is_null($xmlDatosFormulario)) $this->setXmlDatosFormulario($xmlDatosFormulario);
-			if(!is_null($activo)) $this->setActivo($activo);
+			if(!is_null($datosEnvio)) $this->setDatosEnvio($datosEnvio);
+			if(!is_null($datosFormulario)) $this->setDatosFormulario($datosFormulario);
 		}
 		function toString(){
 			return 
 			'idFormularioDatos='.$this->idFormularioDatos.', '.
 			'idFormulario='.$this->idFormulario.', '.
-			'xmlDatosEnvio='.$this->xmlDatosEnvio.', '.
-			'xmlDatosFormulario='.$this->xmlDatosFormulario.', '.
-			'activo='.$this->activo.', ';
+			'datosEnvio='.$this->datosEnvio.', '.
+			'datosFormulario='.$this->datosFormulario.', ';
 		}
 		function set($parametros){
 			if(is_array($parametros)){
@@ -31,7 +28,7 @@
 			}
 		}
 		function toJson(){
-			return json_encode(array('idFormularioDatos'=>$this->idFormularioDatos,'idFormulario'=>$this->idFormulario,'xmlDatosEnvio'=>$this->xmlDatosEnvio,'xmlDatosFormulario'=>$this->xmlDatosFormulario,'activo'=>$this->activo));
+			return json_encode(array('idFormularioDatos'=>$this->idFormularioDatos,'idFormulario'=>$this->idFormulario,'datosEnvio'=>$this->datosEnvio,'datosFormulario'=>$this->datosFormulario));
 		}
 		function setIdFormularioDatos($idFormularioDatos){ 
  			if(is_null($idFormularioDatos)||strlen($idFormularioDatos)==0){ 
@@ -45,28 +42,21 @@
 			 }
  			$this->idFormulario=$idFormulario; 
 		}
-		function setXmlDatosEnvio($xmlDatosEnvio){ 
- 			if(is_null($xmlDatosEnvio)||strlen($xmlDatosEnvio)==0){ 
-				 throw new valorNuloInvalido('El campo xmlDatosEnvio es requerido.');
+		function setDatosEnvio($datosEnvio){ 
+ 			if(is_null($datosEnvio)||strlen($datosEnvio)==0){ 
+				 throw new valorNuloInvalido('El campo datosEnvio es requerido.');
 			 }
- 			$this->xmlDatosEnvio=$xmlDatosEnvio; 
+ 			$this->datosEnvio=$datosEnvio; 
 		}
-		function setXmlDatosFormulario($xmlDatosFormulario){ 
- 			if(is_null($xmlDatosFormulario)||strlen($xmlDatosFormulario)==0){ 
-				 throw new valorNuloInvalido('El campo xmlDatosFormulario es requerido.');
+		function setDatosFormulario($datosFormulario){ 
+ 			if(is_null($datosFormulario)||strlen($datosFormulario)==0){ 
+				 throw new valorNuloInvalido('El campo datosFormulario es requerido.');
 			 }
- 			$this->xmlDatosFormulario=$xmlDatosFormulario; 
-		}
-		function setActivo($activo){ 
- 			if(is_null($activo)||strlen($activo)==0){ 
-				 throw new valorNuloInvalido('El campo activo es requerido.');
-			 }
- 			$this->activo=$activo; 
+ 			$this->datosFormulario=$datosFormulario; 
 		}
 		function getIdFormularioDatos(){ return $this->idFormularioDatos; }
 		function getIdFormulario(){ return $this->idFormulario; }
-		function getXmlDatosEnvio(){ return $this->xmlDatosEnvio; }
-		function getXmlDatosFormulario(){ return $this->xmlDatosFormulario; }
-		function getActivo(){ return $this->activo; }
+		function getDatosEnvio(){ return $this->datosEnvio; }
+		function getDatosFormulario(){ return $this->datosFormulario; }
 	}
 ?>

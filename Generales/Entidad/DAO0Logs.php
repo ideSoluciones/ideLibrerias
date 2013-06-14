@@ -1,8 +1,9 @@
 <?php
 	class DAO0Logs{
 		private $db=null;
-		function DAO0Logs($db){
-			$this->db=$db;
+		function DAO0Logs(){
+			$sesion=Sesion::getInstancia();
+			$this->db=$sesion->getDB();
 		}
 		function setDb($db){ $this->db=$db; }
 		function crearVO() { 
@@ -288,11 +289,11 @@
 			$retorno=array();
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idLog","tablaOrigen"=>"0Logs","valor"=>$registro->getIdLog()));
-				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idUsuario","tablaOrigen"=>"0Logs","valor"=>$registro->getIdUsuario()));
+				if (!is_null($registro->getIdUsuario()))  ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idUsuario","tablaOrigen"=>"0Logs","valor"=>$registro->getIdUsuario()));
 				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"direcionIP","tablaOrigen"=>"0Logs","valor"=>$registro->getDirecionIP()));
 				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"fechalog","tablaOrigen"=>"0Logs","valor"=>$registro->getFechalog()));
-				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"ident","tablaOrigen"=>"0Logs","valor"=>$registro->getIdent()));
-				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"prioridad","tablaOrigen"=>"0Logs","valor"=>$registro->getPrioridad()));
+				if (!is_null($registro->getIdent()))  ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"ident","tablaOrigen"=>"0Logs","valor"=>$registro->getIdent()));
+				if (!is_null($registro->getPrioridad()))  ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"prioridad","tablaOrigen"=>"0Logs","valor"=>$registro->getPrioridad()));
 				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"mensaje","tablaOrigen"=>"0Logs","valor"=>$registro->getMensaje()));
 			if($this->db->insertar($consulta)){
 				$registro->setIdLog($this->db->ultimoId);
@@ -301,7 +302,7 @@
 				return false;
 			}
 		}
-		function actualizarRegistro($registro){
+		function actualizarRegistro($registro,$condiciones=null){
 			$retorno=array();
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idLog","tablaOrigen"=>"0Logs","valor"=>$registro->getIdLog()));
@@ -313,7 +314,13 @@
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"mensaje","tablaOrigen"=>"0Logs","valor"=>$registro->getMensaje()));
 			$condicion = ControlXML::agregarNodo($consulta,"Condiciones");
 			$y = ControlXML::agregarNodo($condicion,"Y");
-			ControlXML::agregarNodo($y,"Igual",array("campo"=>"idLog","tabla"=>"0Logs","valor"=>$registro->getIdLog()));
+			if(is_array($condiciones) && count($condiciones)>0){
+				foreach($condiciones as $campo=>$valor){
+					ControlXML::agregarNodo($y,"Igual",array("campo"=>"$campo","tabla"=>"0Logs","valor"=>$valor));
+				}
+			}else{
+				ControlXML::agregarNodo($y,"Igual",array("campo"=>"idLog","tabla"=>"0Logs","valor"=>$registro->getIdLog()));
+			}
 			if($this->db->actualizar($consulta)){
 				return true;
 			}else{

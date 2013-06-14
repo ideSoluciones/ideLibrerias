@@ -57,14 +57,23 @@
 			 }
  			$this->path=$path; 
 		}
-		function setFecha($fecha=null){ 
-  			$this->fecha=$fecha; 
+		function setFecha($fecha){ 
+ 			if(is_null($fecha)||strlen($fecha)==0){ 
+				 throw new valorNuloInvalido('El campo fecha es requerido.');
+			 }
+ 			$this->fecha=$fecha; 
 		}
-		function setTitulo($titulo=null){ 
-  			$this->titulo=$titulo; 
+		function setTitulo($titulo){ 
+ 			if(is_null($titulo)||strlen($titulo)==0){ 
+				 throw new valorNuloInvalido('El campo titulo es requerido.');
+			 }
+ 			$this->titulo=$titulo; 
 		}
-		function setContenidoCorto($contenidoCorto=null){ 
-  			$this->contenidoCorto=$contenidoCorto; 
+		function setContenidoCorto($contenidoCorto){ 
+ 			if(is_null($contenidoCorto)||strlen($contenidoCorto)==0){ 
+				 throw new valorNuloInvalido('El campo contenidoCorto es requerido.');
+			 }
+ 			$this->contenidoCorto=$contenidoCorto; 
 		}
 		function setContenidoCompleto($contenidoCompleto){ 
  			if(is_null($contenidoCompleto)||strlen($contenidoCompleto)==0){ 
