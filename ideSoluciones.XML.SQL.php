@@ -575,6 +575,11 @@
 						$temp.=$this->getPrefijoTabla().$hijo["tabla"].".".$hijo["campo"]." REGEXP '".$hijo["valor"]."'";
 					}
 				}
+				if(($hijo->getName()=="En")>0){
+					if (strlen($hijo["tabla"])>0){
+						$temp.=$this->getPrefijoTabla().$hijo["tabla"].".".$hijo["campo"]." IN ".$hijo["valor"]."";
+					}
+				}
 				$temp.=$this->analizarCondiciones($hijo,$hijo->getName(), $prof+1);
 				if($j!=$totalHijos){
 					if($padre=="Y")
