@@ -48,10 +48,10 @@
 			 }
  			$this->user=$user; 
 		}
-		function setPass($pass){
+		function setPass($pass){ 
  			if(is_null($pass)||strlen($pass)==0){ 
 				 throw new valorNuloInvalido('El campo pass es requerido.');
-			}
+			 }
  			$this->pass=$pass; 
 		}
 		function setCorreo($correo){ 
@@ -60,8 +60,11 @@
 			 }
  			$this->correo=$correo; 
 		}
-		function setXmlPropiedades($xmlPropiedades=null){ 
-  			$this->xmlPropiedades=$xmlPropiedades; 
+		function setXmlPropiedades($xmlPropiedades){ 
+ 			if(is_null($xmlPropiedades)||strlen($xmlPropiedades)==0){ 
+				 throw new valorNuloInvalido('El campo xmlPropiedades es requerido.');
+			 }
+ 			$this->xmlPropiedades=$xmlPropiedades; 
 		}
 		function setActivo($activo){ 
  			if(is_null($activo)||strlen($activo)==0){ 
@@ -70,10 +73,10 @@
  			$this->activo=$activo; 
 		}
 		function getIdUsuario(){ return $this->idUsuario; }
-		function getUser(){ if(is_null($this->user)){ throw new valorNuloInvalido('El campo user es requerido.'); }else{ return $this->user;} }
-		function getPass(){ if(is_null($this->pass)){ throw new valorNuloInvalido('El campo pass es requerido.'); }else{ return $this->pass;} }
-		function getCorreo(){ if(is_null($this->correo)){ throw new valorNuloInvalido('El campo correo es requerido.'); }else{ return $this->correo;} }
+		function getUser(){ return $this->user; }
+		function getPass(){ return $this->pass; }
+		function getCorreo(){ return $this->correo; }
 		function getXmlPropiedades(){ return $this->xmlPropiedades; }
-		function getActivo(){ if(is_null($this->activo)){ throw new valorNuloInvalido('El campo activo es requerido.'); }else{ return $this->activo;} }
+		function getActivo(){ return $this->activo; }
 	}
 ?>

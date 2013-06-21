@@ -1,8 +1,13 @@
 <?php
 	class DAO0Sesion{
 		private $db=null;
-		function DAO0Sesion($db){
-			$this->db=$db;
+		function DAO0Sesion($db=null){
+			if (is_null($db)){
+				$sesion=Sesion::getInstancia();
+				$this->db=$sesion->getDB();
+			}else{
+				$this->db=$db;
+			}
 		}
 		function setDb($db){ $this->db=$db; }
 		function crearVO() { 
@@ -253,7 +258,7 @@
 				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosSesion","tablaOrigen"=>"0Sesion","valor"=>$registro->getDatosSesion()));
 				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idUsuario","tablaOrigen"=>"0Sesion","valor"=>$registro->getIdUsuario()));
 				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"ultimoAcceso","tablaOrigen"=>"0Sesion","valor"=>$registro->getUltimoAcceso()));
-				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosAcceso","tablaOrigen"=>"0Sesion","valor"=>$registro->getDatosAcceso()));
+				if (!is_null($registro->getDatosAcceso()))  ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosAcceso","tablaOrigen"=>"0Sesion","valor"=>$registro->getDatosAcceso()));
 			if($this->db->insertar($consulta)){
 				$registro->setIdSesion($this->db->ultimoId);
 				return true;
@@ -261,7 +266,7 @@
 				return false;
 			}
 		}
-		function actualizarRegistro($registro){
+		function actualizarRegistro($registro,$condiciones=null){
 			$retorno=array();
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idSesion","tablaOrigen"=>"0Sesion","valor"=>$registro->getIdSesion()));
@@ -271,7 +276,13 @@
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosAcceso","tablaOrigen"=>"0Sesion","valor"=>$registro->getDatosAcceso()));
 			$condicion = ControlXML::agregarNodo($consulta,"Condiciones");
 			$y = ControlXML::agregarNodo($condicion,"Y");
-			ControlXML::agregarNodo($y,"Igual",array("campo"=>"idSesion","tabla"=>"0Sesion","valor"=>$registro->getIdSesion()));
+			if(is_array($condiciones) && count($condiciones)>0){
+				foreach($condiciones as $campo=>$valor){
+					ControlXML::agregarNodo($y,"Igual",array("campo"=>"$campo","tabla"=>"0Sesion","valor"=>$valor));
+				}
+			}else{
+				ControlXML::agregarNodo($y,"Igual",array("campo"=>"idSesion","tabla"=>"0Sesion","valor"=>$registro->getIdSesion()));
+			}
 			if($this->db->actualizar($consulta)){
 				return true;
 			}else{

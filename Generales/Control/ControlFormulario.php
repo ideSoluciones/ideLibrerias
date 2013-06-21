@@ -53,16 +53,16 @@ class ControlFormulario{
 		return ControlFormulario::agregarFormulario($nodo, $parametros);
 	}
 	public static function agregarFormulario($nodo, $parametros=array()){
-		if(!isset($parametros["idCasoUso"])){
-			$sesion=Sesion::getInstancia();
-			$parametros["idCasoUso"]=$sesion->leerParametro("idCasoUso");
-		}
 		if (is_null($nodo)){
 			$formulario=ControlXML::nuevo("Formulario");
 		}else{
 			$formulario = $nodo->addChild("Formulario");
 		}
         if (is_array($parametros)){
+			if(!isset($parametros["idCasoUso"])){
+				$sesion=Sesion::getInstancia();
+				$parametros["idCasoUso"]=$sesion->leerParametro("idCasoUso");
+			}
         	foreach($parametros as $nombre=>$parametro){
 	        	$propiedad = $formulario->addChild("Propiedad");
         		$propiedad->addAttribute("nombre", $nombre);
@@ -84,6 +84,12 @@ class ControlFormulario{
 		$campo->addAttribute("tipo", 'enviar');
 		$campo->addAttribute("nombre", isset($parametros["nombre"])?siEsta($parametros["nombre"],"Enviar"):"Enviar");
 		$campo->addAttribute("titulo", isset($parametros["titulo"])?siEsta($parametros["titulo"],"Enviar"):"Enviar");
+		if (isset($parametros["id"])){
+			$campo->addAttribute("id", $parametros["id"]);
+		}
+		if (isset($parametros["estilo"])){
+			$campo->addAttribute("estilo", $parametros["estilo"]);
+		}
 		return $campo;
 	}
 

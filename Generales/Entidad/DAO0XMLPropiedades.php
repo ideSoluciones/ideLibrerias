@@ -1,8 +1,9 @@
 <?php
 	class DAO0XMLPropiedades{
 		private $db=null;
-		function DAO0XMLPropiedades($db){
-			$this->db=$db;
+		function DAO0XMLPropiedades(){
+			$sesion=Sesion::getInstancia();
+			$this->db=$sesion->getDB();
 		}
 		function setDb($db){ $this->db=$db; }
 		function crearVO() { 
@@ -261,7 +262,7 @@
 				return false;
 			}
 		}
-		function actualizarRegistro($registro){
+		function actualizarRegistro($registro,$condiciones=null){
 			$retorno=array();
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idXMLPropiedades","tablaOrigen"=>"0XMLPropiedades","valor"=>$registro->getIdXMLPropiedades()));
@@ -271,7 +272,13 @@
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlPropiedades","tablaOrigen"=>"0XMLPropiedades","valor"=>$registro->getXmlPropiedades()));
 			$condicion = ControlXML::agregarNodo($consulta,"Condiciones");
 			$y = ControlXML::agregarNodo($condicion,"Y");
-			ControlXML::agregarNodo($y,"Igual",array("campo"=>"idXMLPropiedades","tabla"=>"0XMLPropiedades","valor"=>$registro->getIdXMLPropiedades()));
+			if(is_array($condiciones) && count($condiciones)>0){
+				foreach($condiciones as $campo=>$valor){
+					ControlXML::agregarNodo($y,"Igual",array("campo"=>"$campo","tabla"=>"0XMLPropiedades","valor"=>$valor));
+				}
+			}else{
+				ControlXML::agregarNodo($y,"Igual",array("campo"=>"idXMLPropiedades","tabla"=>"0XMLPropiedades","valor"=>$registro->getIdXMLPropiedades()));
+			}
 			if($this->db->actualizar($consulta)){
 				return true;
 			}else{

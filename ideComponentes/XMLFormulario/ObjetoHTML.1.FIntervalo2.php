@@ -89,7 +89,7 @@
 				$total .= '<div class="intervalo"><div class="tituloIntervalo">'.$propiedades["titulo"].':</div>';
 				$intermedio = "";
 				foreach($propiedades["opciones"] as $nom=>$valor){
-					$total .= $intermedio.'<div class="opcionIntervalo" >'.$nom.'<br/><input id="'.$this->getNombre().'_'.$nom.'" name="'.$nom.'" value="'.$valor.'"/></div>';
+					$total .= $intermedio.'<div class="opcionIntervalo" >'.$nom.'<br/><input id="'.$this->getNombre().'_'.$nom.'" name="'.$this->getNombre().'_'.$nom.'" value="'.$valor.'"/></div>';
 					$total .= '<script type="text/javascript">
 						$(function() {
 							$("#'.$this->getNombre().'_'.$nom.'").focusout(function (){

@@ -1,8 +1,9 @@
 <?php
 	class DAO0UsuarioCasoUso{
 		private $db=null;
-		function DAO0UsuarioCasoUso($db){
-			$this->db=$db;
+		function DAO0UsuarioCasoUso(){
+			$sesion=Sesion::getInstancia();
+			$this->db=$sesion->getDB();
 		}
 		function setDb($db){ $this->db=$db; }
 		function crearVO() { 
@@ -215,7 +216,7 @@
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idCasoUso","tablaOrigen"=>"0UsuarioCasoUso","valor"=>$registro->getIdCasoUso()));
 				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idUsuario","tablaOrigen"=>"0UsuarioCasoUso","valor"=>$registro->getIdUsuario()));
-				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"condiciones","tablaOrigen"=>"0UsuarioCasoUso","valor"=>$registro->getCondiciones()));
+				if (!is_null($registro->getCondiciones()))  ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"condiciones","tablaOrigen"=>"0UsuarioCasoUso","valor"=>$registro->getCondiciones()));
 			if($this->db->insertar($consulta)){
 				$registro->setIdCasoUso($this->db->ultimoId);
 					$registro->setIdUsuario($this->db->ultimoId);
@@ -224,7 +225,7 @@
 				return false;
 			}
 		}
-		function actualizarRegistro($registro){
+		function actualizarRegistro($registro,$condiciones=null){
 			$retorno=array();
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idCasoUso","tablaOrigen"=>"0UsuarioCasoUso","valor"=>$registro->getIdCasoUso()));
@@ -232,8 +233,14 @@
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"condiciones","tablaOrigen"=>"0UsuarioCasoUso","valor"=>$registro->getCondiciones()));
 			$condicion = ControlXML::agregarNodo($consulta,"Condiciones");
 			$y = ControlXML::agregarNodo($condicion,"Y");
-			ControlXML::agregarNodo($y,"Igual",array("campo"=>"idCasoUso","tabla"=>"0UsuarioCasoUso","valor"=>$registro->getIdCasoUso()));
-			ControlXML::agregarNodo($y,"Igual",array("campo"=>"idUsuario","tabla"=>"0UsuarioCasoUso","valor"=>$registro->getIdUsuario()));
+			if(is_array($condiciones) && count($condiciones)>0){
+				foreach($condiciones as $campo=>$valor){
+					ControlXML::agregarNodo($y,"Igual",array("campo"=>"$campo","tabla"=>"0UsuarioCasoUso","valor"=>$valor));
+				}
+			}else{
+				ControlXML::agregarNodo($y,"Igual",array("campo"=>"idCasoUso","tabla"=>"0UsuarioCasoUso","valor"=>$registro->getIdCasoUso()));
+				ControlXML::agregarNodo($y,"Igual",array("campo"=>"idUsuario","tabla"=>"0UsuarioCasoUso","valor"=>$registro->getIdUsuario()));
+			}
 			if($this->db->actualizar($consulta)){
 				return true;
 			}else{

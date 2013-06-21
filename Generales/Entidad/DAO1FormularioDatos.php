@@ -1,12 +1,16 @@
 <?php
 	class DAO1FormularioDatos{
 		private $db=null;
-		function DAO1FormularioDatos($db){
-			$this->db=$db;
+		function DAO1FormularioDatos(){
+			$sesion=Sesion::getInstancia();
+			$this->db=$sesion->getDB();
 		}
 		function setDb($db){ $this->db=$db; }
 		function crearVO() { 
 			return new VO1FormularioDatos();
+		}
+		public static function getTabla(){
+			return '1FormularioDatos';
 		}
 		function getRegistro($idFormularioDatos) {
 			$objVO=$this->crearVO();
@@ -14,9 +18,8 @@
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormularioDatos","tablaOrigen"=>"1FormularioDatos"));
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosEnvio","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"activo","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosEnvio","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosFormulario","tablaOrigen"=>"1FormularioDatos"));
 			$condicion = ControlXML::agregarNodo($consulta,"Condiciones");
 			$y = ControlXML::agregarNodo($condicion,"Y");
 			ControlXML::agregarNodo($y,"Igual",array("campo"=>"idFormularioDatos","tabla"=>"1FormularioDatos","valor"=>$idFormularioDatos));
@@ -24,9 +27,8 @@
 			if(count($resultado)>0){
 				$objVO->setIdFormularioDatos($resultado[0]["idFormularioDatos"]);
 				$objVO->setIdFormulario($resultado[0]["idFormulario"]);
-				$objVO->setXmlDatosEnvio($resultado[0]["xmlDatosEnvio"]);
-				$objVO->setXmlDatosFormulario($resultado[0]["xmlDatosFormulario"]);
-				$objVO->setActivo($resultado[0]["activo"]);
+				$objVO->setDatosEnvio($resultado[0]["datosEnvio"]);
+				$objVO->setDatosFormulario($resultado[0]["datosFormulario"]);
 			}else{
 				throw new sinResultados("No se encontro el registro solicitado.");
 			}
@@ -71,9 +73,8 @@
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormularioDatos","tablaOrigen"=>"1FormularioDatos"));
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosEnvio","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"activo","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosEnvio","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosFormulario","tablaOrigen"=>"1FormularioDatos"));
 			if(!is_null($condiciones)){
 				if(is_object($condiciones)){
 					if(strcmp(get_class($condiciones),"SimpleXMLElement")==0){
@@ -88,14 +89,11 @@
 							if(strcmp($condiciones->getIdFormulario(),"")!=0){
 								ControlXML::agregarNodo($y,"Igual",array("campo"=>"idFormulario","tabla"=>"1FormularioDatos","valor"=>$condiciones->getIdFormulario()));
 							}
-							if(strcmp($condiciones->getXmlDatosEnvio(),"")!=0){
-								ControlXML::agregarNodo($y,"Igual",array("campo"=>"xmlDatosEnvio","tabla"=>"1FormularioDatos","valor"=>$condiciones->getXmlDatosEnvio()));
+							if(strcmp($condiciones->getDatosEnvio(),"")!=0){
+								ControlXML::agregarNodo($y,"Igual",array("campo"=>"datosEnvio","tabla"=>"1FormularioDatos","valor"=>$condiciones->getDatosEnvio()));
 							}
-							if(strcmp($condiciones->getXmlDatosFormulario(),"")!=0){
-								ControlXML::agregarNodo($y,"Igual",array("campo"=>"xmlDatosFormulario","tabla"=>"1FormularioDatos","valor"=>$condiciones->getXmlDatosFormulario()));
-							}
-							if(strcmp($condiciones->getActivo(),"")!=0){
-								ControlXML::agregarNodo($y,"Igual",array("campo"=>"activo","tabla"=>"1FormularioDatos","valor"=>$condiciones->getActivo()));
+							if(strcmp($condiciones->getDatosFormulario(),"")!=0){
+								ControlXML::agregarNodo($y,"Igual",array("campo"=>"datosFormulario","tabla"=>"1FormularioDatos","valor"=>$condiciones->getDatosFormulario()));
 							}
 						}
 					}
@@ -107,9 +105,8 @@
 					$objVO=$this->crearVO();
 					$objVO->setIdFormularioDatos($reg["idFormularioDatos"]);
 					$objVO->setIdFormulario($reg["idFormulario"]);
-					$objVO->setXmlDatosEnvio($reg["xmlDatosEnvio"]);
-					$objVO->setXmlDatosFormulario($reg["xmlDatosFormulario"]);
-					$objVO->setActivo($reg["activo"]);
+					$objVO->setDatosEnvio($reg["datosEnvio"]);
+					$objVO->setDatosFormulario($reg["datosFormulario"]);
 					$retorno[]=$objVO;
 				}
 			}else{
@@ -122,9 +119,8 @@
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormularioDatos","tablaOrigen"=>"1FormularioDatos"));
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosEnvio","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"activo","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosEnvio","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosFormulario","tablaOrigen"=>"1FormularioDatos"));
 			if(!is_null($condiciones)){
 				if(is_object($condiciones)){
 					if(strcmp(get_class($condiciones),"SimpleXMLElement")==0){
@@ -139,14 +135,11 @@
 							if(strcmp($condiciones->getIdFormulario(),"")!=0){
 								ControlXML::agregarNodo($y,"Igual",array("campo"=>"idFormulario","tabla"=>"1FormularioDatos","valor"=>$condiciones->getIdFormulario()));
 							}
-							if(strcmp($condiciones->getXmlDatosEnvio(),"")!=0){
-								ControlXML::agregarNodo($y,"Igual",array("campo"=>"xmlDatosEnvio","tabla"=>"1FormularioDatos","valor"=>$condiciones->getXmlDatosEnvio()));
+							if(strcmp($condiciones->getDatosEnvio(),"")!=0){
+								ControlXML::agregarNodo($y,"Igual",array("campo"=>"datosEnvio","tabla"=>"1FormularioDatos","valor"=>$condiciones->getDatosEnvio()));
 							}
-							if(strcmp($condiciones->getXmlDatosFormulario(),"")!=0){
-								ControlXML::agregarNodo($y,"Igual",array("campo"=>"xmlDatosFormulario","tabla"=>"1FormularioDatos","valor"=>$condiciones->getXmlDatosFormulario()));
-							}
-							if(strcmp($condiciones->getActivo(),"")!=0){
-								ControlXML::agregarNodo($y,"Igual",array("campo"=>"activo","tabla"=>"1FormularioDatos","valor"=>$condiciones->getActivo()));
+							if(strcmp($condiciones->getDatosFormulario(),"")!=0){
+								ControlXML::agregarNodo($y,"Igual",array("campo"=>"datosFormulario","tabla"=>"1FormularioDatos","valor"=>$condiciones->getDatosFormulario()));
 							}
 						}
 					}
@@ -163,25 +156,22 @@
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormularioDatos","tablaOrigen"=>"1FormularioDatos"));
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosEnvio","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"activo","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosEnvio","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosFormulario","tablaOrigen"=>"1FormularioDatos"));
 			$condicion = ControlXML::agregarNodo($consulta,"Condiciones");
 			$y = ControlXML::agregarNodo($condicion,"Y");
 			if(!is_null($vo1FormularioDatos->getIdFormularioDatos())){ ControlXML::agregarNodo($y,"Igual",array("campo"=>"idFormularioDatos", "tabla"=>"1FormularioDatos", "valor"=>$vo1FormularioDatos->getIdFormularioDatos()));}
 			if(!is_null($vo1FormularioDatos->getIdFormulario())){ ControlXML::agregarNodo($y,"Igual",array("campo"=>"idFormulario", "tabla"=>"1FormularioDatos", "valor"=>$vo1FormularioDatos->getIdFormulario()));}
-			if(!is_null($vo1FormularioDatos->getXmlDatosEnvio())){ ControlXML::agregarNodo($y,"Igual",array("campo"=>"xmlDatosEnvio", "tabla"=>"1FormularioDatos", "valor"=>$vo1FormularioDatos->getXmlDatosEnvio()));}
-			if(!is_null($vo1FormularioDatos->getXmlDatosFormulario())){ ControlXML::agregarNodo($y,"Igual",array("campo"=>"xmlDatosFormulario", "tabla"=>"1FormularioDatos", "valor"=>$vo1FormularioDatos->getXmlDatosFormulario()));}
-			if(!is_null($vo1FormularioDatos->getActivo())){ ControlXML::agregarNodo($y,"Igual",array("campo"=>"activo", "tabla"=>"1FormularioDatos", "valor"=>$vo1FormularioDatos->getActivo()));}
+			if(!is_null($vo1FormularioDatos->getDatosEnvio())){ ControlXML::agregarNodo($y,"Igual",array("campo"=>"datosEnvio", "tabla"=>"1FormularioDatos", "valor"=>$vo1FormularioDatos->getDatosEnvio()));}
+			if(!is_null($vo1FormularioDatos->getDatosFormulario())){ ControlXML::agregarNodo($y,"Igual",array("campo"=>"datosFormulario", "tabla"=>"1FormularioDatos", "valor"=>$vo1FormularioDatos->getDatosFormulario()));}
 			$resultado=$this->db->consultar($consulta);
 			if(count($resultado)>0){
 				foreach($resultado as $reg){
 					$objVO=$this->crearVO();
 					$objVO->setIdFormularioDatos($reg["idFormularioDatos"]);
 					$objVO->setIdFormulario($reg["idFormulario"]);
-					$objVO->setXmlDatosEnvio($reg["xmlDatosEnvio"]);
-					$objVO->setXmlDatosFormulario($reg["xmlDatosFormulario"]);
-					$objVO->setActivo($reg["activo"]);
+					$objVO->setDatosEnvio($reg["datosEnvio"]);
+					$objVO->setDatosFormulario($reg["datosFormulario"]);
 					$retorno[]=$objVO;
 				}
 			}else{
@@ -194,9 +184,8 @@
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormularioDatos","tablaOrigen"=>"1FormularioDatos"));
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosEnvio","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosFormulario","tablaOrigen"=>"1FormularioDatos"));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"activo","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosEnvio","tablaOrigen"=>"1FormularioDatos"));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosFormulario","tablaOrigen"=>"1FormularioDatos"));
 			$parametro = $consulta->addChild("Limitar");
 			$parametro->addAttribute("regInicial", $n);
 			$parametro->addAttribute("noRegistros", $m);
@@ -214,14 +203,11 @@
 							if(strcmp($condiciones->getIdFormulario(),"")!=0){
 								ControlXML::agregarNodo($y,"Igual",array("campo"=>"idFormulario","tabla"=>"1FormularioDatos","valor"=>$condiciones->getIdFormulario()));
 							}
-							if(strcmp($condiciones->getXmlDatosEnvio(),"")!=0){
-								ControlXML::agregarNodo($y,"Igual",array("campo"=>"xmlDatosEnvio","tabla"=>"1FormularioDatos","valor"=>$condiciones->getXmlDatosEnvio()));
+							if(strcmp($condiciones->getDatosEnvio(),"")!=0){
+								ControlXML::agregarNodo($y,"Igual",array("campo"=>"datosEnvio","tabla"=>"1FormularioDatos","valor"=>$condiciones->getDatosEnvio()));
 							}
-							if(strcmp($condiciones->getXmlDatosFormulario(),"")!=0){
-								ControlXML::agregarNodo($y,"Igual",array("campo"=>"xmlDatosFormulario","tabla"=>"1FormularioDatos","valor"=>$condiciones->getXmlDatosFormulario()));
-							}
-							if(strcmp($condiciones->getActivo(),"")!=0){
-								ControlXML::agregarNodo($y,"Igual",array("campo"=>"activo","tabla"=>"1FormularioDatos","valor"=>$condiciones->getActivo()));
+							if(strcmp($condiciones->getDatosFormulario(),"")!=0){
+								ControlXML::agregarNodo($y,"Igual",array("campo"=>"datosFormulario","tabla"=>"1FormularioDatos","valor"=>$condiciones->getDatosFormulario()));
 							}
 						}
 					}
@@ -233,9 +219,8 @@
 					$objVO=$this->crearVO();
 					$objVO->setIdFormularioDatos($reg["idFormularioDatos"]);
 					$objVO->setIdFormulario($reg["idFormulario"]);
-					$objVO->setXmlDatosEnvio($reg["xmlDatosEnvio"]);
-					$objVO->setXmlDatosFormulario($reg["xmlDatosFormulario"]);
-					$objVO->setActivo($reg["activo"]);
+					$objVO->setDatosEnvio($reg["datosEnvio"]);
+					$objVO->setDatosFormulario($reg["datosFormulario"]);
 					$retorno[]=$objVO;
 				}
 			}else{
@@ -248,9 +233,8 @@
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormularioDatos","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getIdFormularioDatos()));
 				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormulario","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getIdFormulario()));
-				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosEnvio","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getXmlDatosEnvio()));
-				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosFormulario","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getXmlDatosFormulario()));
-				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"activo","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getActivo()));
+				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosEnvio","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getDatosEnvio()));
+				ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosFormulario","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getDatosFormulario()));
 			if($this->db->insertar($consulta)){
 				$registro->setIdFormularioDatos($this->db->ultimoId);
 				return true;
@@ -258,17 +242,22 @@
 				return false;
 			}
 		}
-		function actualizarRegistro($registro){
+		function actualizarRegistro($registro,$condiciones=null){
 			$retorno=array();
 			$consulta=new SimpleXMLElement("<Consulta />");
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormularioDatos","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getIdFormularioDatos()));
 			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"idFormulario","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getIdFormulario()));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosEnvio","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getXmlDatosEnvio()));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"xmlDatosFormulario","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getXmlDatosFormulario()));
-			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"activo","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getActivo()));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosEnvio","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getDatosEnvio()));
+			ControlXML::agregarNodo($consulta,"Campo",array("nombre"=>"datosFormulario","tablaOrigen"=>"1FormularioDatos","valor"=>$registro->getDatosFormulario()));
 			$condicion = ControlXML::agregarNodo($consulta,"Condiciones");
 			$y = ControlXML::agregarNodo($condicion,"Y");
-			ControlXML::agregarNodo($y,"Igual",array("campo"=>"idFormularioDatos","tabla"=>"1FormularioDatos","valor"=>$registro->getIdFormularioDatos()));
+			if(is_array($condiciones) && count($condiciones)>0){
+				foreach($condiciones as $campo=>$valor){
+					ControlXML::agregarNodo($y,"Igual",array("campo"=>"$campo","tabla"=>"1FormularioDatos","valor"=>$valor));
+				}
+			}else{
+				ControlXML::agregarNodo($y,"Igual",array("campo"=>"idFormularioDatos","tabla"=>"1FormularioDatos","valor"=>$registro->getIdFormularioDatos()));
+			}
 			if($this->db->actualizar($consulta)){
 				return true;
 			}else{
