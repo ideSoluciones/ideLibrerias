@@ -33,6 +33,7 @@
 		var $Error;
 		public $sql;
 		var $ultimoId;
+		public $debug=false;
 		
 		function table_exists ($table) { 
 			$prefijo=$this->conn["pconn"]["prefijo"];
@@ -695,6 +696,10 @@
 					$xmltmp=$xml->xpath('Condiciones');
 					if(is_array($xmltmp)){
 						if(count($xmltmp)>0){
+							/*if ($this->debug){
+								msg::add("Analizando ");
+								msg::add($xmltmp);
+							}*/
 							$cond=$this->analizarCondiciones($xmltmp,$prefijo,$driver);
 							if(strcmp($cond,"")!=0){
 								$condicionesC=" WHERE ".$cond." ";
@@ -816,7 +821,7 @@
 				}
 				if(($hijo->getName()=="En")>0){
 					if (strlen($hijo["tabla"])>0){
-						$temp.=$this->getPrefijoTabla().$hijo["tabla"].".".$hijo["campo"]." IN ".$hijo["valor"]."";
+						$temp.=$pre.$nombreCompletoTabla.$hijo["campo"]." IN ".$hijo["valor"]."";
 					}
 				}
 				$temp.=$this->analizarCondiciones($hijo,$prefijo,$driver,$hijo->getName(), $prof+1);
