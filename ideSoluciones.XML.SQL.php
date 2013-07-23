@@ -671,7 +671,7 @@
 								$Orden=" ORDER BY ".implode(",",$tmpAgrupar);
 							}
 							if(is_string($tmpAgrupar)){
-								$Orden=" OREDER BY ".$tmpAgrupar;
+								$Orden=" ORDER BY ".$tmpAgrupar;
 							}
 						}
 					}
