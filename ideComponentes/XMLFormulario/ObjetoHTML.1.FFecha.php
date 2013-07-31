@@ -201,7 +201,8 @@ $total.="
 							buttonImageOnly: true,
 							changeMonth: true,
 							changeYear: true,
-							shortYearCutoff: ".$saltoFecha."
+							shortYearCutoff: ".$saltoFecha.",
+							yearRange: '1900:".date("Y")."'
 						});
 						$('#".$propiedades["id"]."_fecha').change(concatenarFechas".$propiedades["id"].");
 						$('#".$propiedades["id"]."_hora').change(concatenarFechas".$propiedades["id"].");

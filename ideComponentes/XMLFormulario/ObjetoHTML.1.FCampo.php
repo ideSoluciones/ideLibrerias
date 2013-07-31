@@ -271,7 +271,12 @@
 			foreach ($propiedades as $a => $i){
 				switch($a){
 					case "tipo":case "campo":case "id":case "nombre":case "titulo":case "requerido":case "valorPorDefecto":case "error": case "hora":break;
-					default: $atributos.=" ".$a."='".$i."'";
+					default: 
+					//msg::add("--");
+					//msg::add($atributos);
+					//msg::add($a);
+					//msg::add($i);
+					$atributos.=" ".$a."='".$i."'";
 				}
 			}
 			//echo "Oculto[".$propiedades["mostrarOculto"]."]";
