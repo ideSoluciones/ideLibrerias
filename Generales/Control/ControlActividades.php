@@ -22,15 +22,23 @@
 			if(is_array($parametros)){
 				$out = "";
 				foreach($parametros as $id=>$parametro){
-					$out .= "[[".$id."]] =>".print_r($parametro,true)."\n";
+					$out .= "[[".$id."]] =>".neat_r($parametro,true)."\n";
 				}
 			}else{
-				$out = print_r($parametros,true);
+				$out = neat_r($parametros,true);
 			}
 			$path = $_SESSION["paths"]["pathServidor"]."/logs/";
 			$conf = array('timeFormat' => '%Y-%m-%d %H:%M:%S');
 			$logger = &Log::singleton('file', $path.$archivo, $ident, $conf);
 			$logger->log("IP origen: ".$_SERVER["REMOTE_ADDR"]."\n"."idUsuario: ".$idUsuario."\n".html_entity_decode(strip_tags($out)), $prioridad);
+		}
+		
+		public static function add($parametros, $archivo="general.log"){
+			$sesion = Sesion::getInstancia();
+			$idUsuario = $sesion->leerParametro("idUsuario");
+			$ident="";
+			$prioridad=null;
+			ControlActividades::registrarEnArchivo($parametros, $idUsuario, $archivo, $ident, $prioridad);
 		}
 
 		/**
@@ -96,5 +104,6 @@
 		
 
 	}
-
+	
+	class reg extends ControlActividades{}
 ?>
