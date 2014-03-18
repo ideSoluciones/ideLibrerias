@@ -32,13 +32,28 @@
 			$logger = &Log::singleton('file', $path.$archivo, $ident, $conf);
 			$logger->log("IP origen: ".$_SERVER["REMOTE_ADDR"]."\n"."idUsuario: ".$idUsuario."\n".html_entity_decode(strip_tags($out)), $prioridad);
 		}
-		
+
+		/**
+		* Realiza un log en un archivo rotativo
+		*
+		* @param array $parametros	Las variables a las cuales se les inspeccionará el contenido.
+		* @param string $archivo	Nombres del archivo, se le adjuntará la fecha antes del ultimo punto.
+		*
+		* @access public	
+		*/
 		public static function add($parametros, $archivo="general.log"){
 			$sesion = Sesion::getInstancia();
 			$idUsuario = $sesion->leerParametro("idUsuario");
 			$ident="";
 			$prioridad=null;
-			ControlActividades::registrarEnArchivo($parametros, $idUsuario, $archivo, $ident, $prioridad);
+			$nombreArchivo = explode(".", $archivo);
+			$extension = $nombreArchivo[count($nombreArchivo)-1];
+			$archivoFinal = "";
+			for($i=0;$i<count($nombreArchivo)-1;$i++){
+				$archivoFinal .= $nombreArchivo[$i];
+			}
+			$archivoFinal .= "_".date("Y-m-d").".".$extension;
+			ControlActividades::registrarEnArchivo($parametros, $idUsuario, $archivoFinal, $ident, $prioridad);
 		}
 
 		/**
