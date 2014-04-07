@@ -61,9 +61,11 @@
  			$this->correo=$correo; 
 		}
 		function setXmlPropiedades($xmlPropiedades){ 
+			/*
  			if(is_null($xmlPropiedades)||strlen($xmlPropiedades)==0){ 
 				 throw new valorNuloInvalido('El campo xmlPropiedades es requerido.');
 			 }
+			 */
  			$this->xmlPropiedades=$xmlPropiedades; 
 		}
 		function setActivo($activo){ 
