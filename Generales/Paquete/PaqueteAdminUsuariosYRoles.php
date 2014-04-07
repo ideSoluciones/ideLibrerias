@@ -132,6 +132,23 @@
 			return $contenido;
 			*/
 		}
+		
+		/**
+		*	Crear usuarios en bloque
+		*/
+		function nombreMenu_crearUsuarioBloque($sesion){
+			return "Administrar/Crear Usuarios Bloque";
+		}
+		
+		function generarContenido_crearUsuarioBloque($sesion){
+			$crearUsuarioBloque=new ControlCrearUsuarioBloque($sesion);
+			return $crearUsuarioBloque->obtenerInterfazPrincipal();
+		}
+				
+		function procesarFormulario_crearUsuarioBloque($sesion){
+			return $this->generarContenido_crearUsuarioBloque($sesion);
+		}
+					
 	}
 	
 	
