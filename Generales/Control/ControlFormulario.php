@@ -103,6 +103,9 @@ class ControlFormulario{
 	 * $valorPorDefecto: valor de la opción que debe quedar seleccionada al momento de pintar la lista desplegable. Por defecto es vacío.
 	 * Att: jag2kn
 	 */
+	public static function addListaSeleccion($nodo, $nombre, $datos, $titulo="", $valorPorDefecto="", $parametros=array()){
+		return ControlFormulario::agregarListaSeleccion($nodo, $nombre, $datos, $titulo, $valorPorDefecto, $parametros);
+	}
 	public static function generarListaSeleccion($nodo, $nombre, $datos, $titulo="", $valorPorDefecto="", $parametros=array()){
 		return ControlFormulario::agregarListaSeleccion($nodo, $nombre, $datos, $titulo, $valorPorDefecto, $parametros);
 	}

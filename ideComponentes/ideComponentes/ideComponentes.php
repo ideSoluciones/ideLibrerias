@@ -295,4 +295,15 @@ class mensajes extends mensaje{
 	}
 }
 class msg extends mensaje{}
+
+class cfg {
+	public static function get($variable){
+		$sesion = Sesion::getInstancia();
+		if (isset($sesion->configuracion->$variable)){
+			return $sesion->configuracion->$variable;
+		}
+		return "";
+	}
+}
+
 ?>

@@ -75,6 +75,7 @@
 							<script >
 							$(function() {
 								$('#tabla".$numeroTabla."').dataTable({
+									'iDisplayLength': 11,
 									'bJQueryUI': true,
 									'bPaginate': ".$paginacion.",
 									'bFilter': ".$busquedas.",

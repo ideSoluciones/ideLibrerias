@@ -638,3 +638,22 @@ function Chr(AsciiNum)
 	return String.fromCharCode(AsciiNum)
 
 }
+
+
+function cargando(estado){
+	if(estado){
+		jQuery("#load").dialog({
+			modal: true,
+			height: 90,
+			width: 180,
+			minWidth: 100,
+			resizable: false,
+			closeOnEscape: false
+		});
+		jQuery(".ui-dialog-titlebar").hide();
+	}else{
+		jQuery("#load").dialog( "destroy" );
+	}
+}
+
+

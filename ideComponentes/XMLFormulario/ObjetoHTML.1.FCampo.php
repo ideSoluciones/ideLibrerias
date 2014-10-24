@@ -34,9 +34,10 @@
 			}
 			$estilo.="contenedorCampoFormulario".$propiedades["tipo"]." campoFormulario";
 			$script="";
+			$clase = "";
 			$valorPorDefecto=isset($propiedades["valorPorDefecto"])?$propiedades["valorPorDefecto"]:"";
 
-			
+			$requerido = false;
 			foreach ($propiedades as $a => $i){
 				if (strcmp($a,"autocomplete")==0 && strcmp($i,"off")==0){
 					$atributos.=$a."=".$i;
@@ -58,7 +59,12 @@
 						}else{
 							if (strcmp($a,"estilo")==0){
 								$atributos.=" style='".$i."' ";
+							}else if (strcmp($a,"clase")==0){
+								$clase=$i;
 							}else{
+								if ($a=="requerido"){
+									$requerido=true;
+								}
 								switch($a){
 									case "tipo":case "campo":case "id":case "nombre":case "titulo":case "requerido":case "valorPorDefecto":case "error": case "hora":break;
 									default: $atributos.=" ".$a."='".$i."'";
@@ -72,6 +78,9 @@
 			$total=$script."";
 			if (isset($propiedades["titulo"])){
 				$total.="<div id='".$this->getIdObjeto()."Titulo' class='".$estilo."Titulo  etiquetaFormulario'>".$propiedades["titulo"];
+				if ($requerido){
+					$total.=" (*) ";
+				}
 			}
 			if (isset($propiedades["titulo"])){
 				$total.="</div>\n";
@@ -81,7 +90,7 @@
 				xml::add($ayuda, "Wiki", $propiedades["ayuda"]);
 				$total.=ide::renderizar($ayuda);
 			}
-			$total.="<input id='".$this->getIdObjeto()."' class='".$estilo."Campo' type='text' name='".$this->getNombre()."' value='".$valorPorDefecto."' ".$atributos." />\n";
+			$total.="<input id='".$this->getIdObjeto()."' class='".$clase." ".$estilo."Campo' type='text' name='".$this->getNombre()."' value='".$valorPorDefecto."' ".$atributos." />\n";
 			$error=isset($propiedades["error"])?$propiedades["error"]:false;
 			$errorMensaje=isset($propiedades["errorMensaje"])?$propiedades["errorMensaje"]:"";
 			$total.=$error?"<label class='error'>".$errorMensaje."</label>":"";
@@ -250,13 +259,17 @@
 			//email
 
 			if(!preg_match("/^[A-Za-z0-9](([_\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})$/",$valorDato,$matches)){
-				if(isset($propiedades["email_msj"])){
-					$respuesta["mensaje"] = $propiedades["email_msj"];
-				}else{
-					$respuesta["mensaje"] = "Por favor ingrese una dirección de correo válida";
+			
+				if (strlen($valorDato)>0){
+			
+					if(isset($propiedades["email_msj"])){
+						$respuesta["mensaje"] = $propiedades["email_msj"];
+					}else{
+						$respuesta["mensaje"] = "Por favor ingrese una dirección de correo válida";
+					}
+					$respuesta["respuesta"] = false;
+					return $respuesta;
 				}
-				$respuesta["respuesta"] = false;
-				return $respuesta;
 			}
 			return $respuesta;
 		}

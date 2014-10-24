@@ -17,7 +17,7 @@
 			$this->setTipoSalida($tipoSalida);
 			$this->setAccionPlus($accionPlus);
 			$this->setXML($xml);
-			$this->agregarJs("Externos/jquery/jquery.disable.text.select.js");
+			//$this->agregarJs("Externos/jquery/jquery.disable.text.select.js");
 		}
 		function toHTML(){
 			$total="";
