@@ -612,6 +612,16 @@ chr($byte4).chr($byte5).chr($byte6);
             return 'application/octet-stream';
         }
     }
+    
+    function limpiarJson($t){
+	    $t2 = str_replace("\n", "", $t);
+		$t2 = str_replace("\r", "", $t2);
+		$j =  json_decode($t2, true);
+		if (is_null($j)){
+			$j = json_decode("{}", true);
+		}
+    	return $t2;
+    }
     	
 	/*
     neat_r works like print_r but with much less visual clutter.
